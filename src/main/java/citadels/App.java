@@ -18,14 +18,30 @@ public class App {
   {
     cardsFile = new File("src/main/resources/citadels/cards.tsv");
     Scanner scanner = new Scanner(cardsFile); // this can possibly throw FileNotFoundException
-    String name; int qty; String color; int cost; String text;
     scanner.nextLine();
-    name = scanner.next();
-    qty = scanner.nextInt();
-    color = scanner.next();
-    cost = scanner.nextInt();
-    text = scanner.next();
-    System.out.printf("%s %d %s %d %s", name, qty, color, cost, text);
+    for (int i=0; i<17; i++){
+      String s = scanner.nextLine();
+      String[] tokens = s.split("[\\s]");
+      int len = tokens.length;
+      int cost = Integer.parseInt(tokens[len-1]);
+      String color = tokens[len-2];
+      int qty = Integer.parseInt(tokens[len-3]);
+      String name = "";
+      for (int j=0; j<len-3; j++){
+        name += tokens[j];
+        if (j < len-4) name += " ";
+      }
+      System.out.printf("%s, %d, %s, %d\n", name, qty, color, cost);
+      // for (String t : tokens){
+      //   System.out.print(t+" "+t.length()+"\n");
+      // }
+      // System.out.println();
+      // String name = scanner.next();
+      // int qty = scanner.nextInt();
+      // String color = scanner.next();
+      // int cost = scanner.nextInt();
+      // System.out.printf("%s %d %s %d\n", name, qty, color, cost);
+    }
   }
 
   public void assignCrown(int crownPlayerId)
