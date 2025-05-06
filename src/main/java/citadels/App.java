@@ -13,12 +13,15 @@ public class App {
 	private File cardsFile;
   private ArrayList<Player> players;
   private Crown crown;
+  private Deck deck;
 
   public void getCardsData() throws FileNotFoundException
   {
     cardsFile = new File("src/main/resources/citadels/cards.tsv");
     Scanner scanner = new Scanner(cardsFile); // this can possibly throw FileNotFoundException
+    deck = new Deck();
     scanner.nextLine();
+    // read and create normal district cards (there are 17 types) from file
     for (int i=0; i<17; i++){
       String s = scanner.nextLine();
       String[] tokens = s.split("[\\s]");
@@ -31,16 +34,10 @@ public class App {
         name += tokens[j];
         if (j < len-4) name += " ";
       }
-      System.out.printf("%s, %d, %s, %d\n", name, qty, color, cost);
-      // for (String t : tokens){
-      //   System.out.print(t+" "+t.length()+"\n");
-      // }
-      // System.out.println();
-      // String name = scanner.next();
-      // int qty = scanner.nextInt();
-      // String color = scanner.next();
-      // int cost = scanner.nextInt();
-      // System.out.printf("%s %d %s %d\n", name, qty, color, cost);
+      Card c = new Card(name, color, cost);
+      for (int j=0; j<qty; j++){
+        deck.addCard(c);
+      }
     }
   }
 
@@ -79,6 +76,18 @@ public class App {
     int crownPlayerId = rand.nextInt(numPlayers);
     assignCrown(crownPlayerId);
     System.out.println(crown.getOwner().getId());
+    // rotate the crowned player to the first index in the list
+    while (players.get(0).getId() != crownPlayerId){
+      Player p = players.get(0);
+      players.remove(0); players.add(p);
+    }
+    // shuffle deck
+    System.out.println("Shuffling deck...");
+    deck.shuffle();
+    deck.disp();
+    System.out.println("Adding characters...");
+    // deal cards to players
+    System.out.println("Dealing cards...");
   }
 
 	public App()
@@ -91,7 +100,7 @@ public class App {
       e.printStackTrace();
       return;
     }
-    // initialSetup();
+    initialSetup();
   }
 
   public static void main(String[] args)
