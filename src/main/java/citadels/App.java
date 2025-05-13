@@ -87,7 +87,16 @@ public class App {
     deck.disp();
     System.out.println("Adding characters...");
     // deal cards to players
-    System.out.println("Dealing cards...");
+    for (Player p : players){
+      for (int i=0; i<4; i++){
+        Card c = deck.pop();
+        p.takeCard(c);
+      }
+    }
+    for (Player p : players){
+      System.out.print(p.disp()+": ");
+      p.showCard();
+    }
   }
 
 	public App()

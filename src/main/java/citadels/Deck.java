@@ -23,10 +23,22 @@ public class Deck
     Collections.shuffle(cards, new Random(System.currentTimeMillis()));
   }
 
+  public Card pop()
+  {
+    if (cards.size() == 0) return null;
+    Card card = cards.get(0);
+    cards.remove(0);
+    return card;
+  }
+
   public void disp()
   {
     for (Card c : cards){
       System.out.println(c.disp());
     }
+  }
+  public int size()
+  {
+    return cards.size();
   }
 }
