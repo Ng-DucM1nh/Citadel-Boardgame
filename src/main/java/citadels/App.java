@@ -14,6 +14,7 @@ public class App {
   private ArrayList<Player> players;
   private Crown crown;
   private Deck deck;
+  private ArrayList<Character> characters;
 
   public void getCardsData() throws FileNotFoundException
   {
@@ -62,10 +63,15 @@ public class App {
   {
     players = new ArrayList<>();
     crown = new Crown();
+    characters = new ArrayList<>();
     // prompt for the number of players
     Scanner scanner = new Scanner(System.in);
     System.out.print("Enter how many players [4-7]:\n> ");
     int numPlayers = scanner.nextInt();
+    if (numPlayers < 4 || numPlayers > 7){
+      System.out.println("Invalid number of players");
+      System.exit(1);
+    }
     // add players object to list
     for (int id=0; id<numPlayers; id++){
       Player p = new Player(id);
@@ -75,7 +81,6 @@ public class App {
     Random rand = new Random(System.currentTimeMillis());
     int crownPlayerId = rand.nextInt(numPlayers);
     assignCrown(crownPlayerId);
-    System.out.println(crown.getOwner().getId());
     // rotate the crowned player to the first index in the list
     while (players.get(0).getId() != crownPlayerId){
       Player p = players.get(0);
@@ -84,19 +89,46 @@ public class App {
     // shuffle deck
     System.out.println("Shuffling deck...");
     deck.shuffle();
-    deck.disp();
+    // add character cards
     System.out.println("Adding characters...");
+    characters.add(new Assassin());
+    characters.add(new Thief());
+    characters.add(new Magician());
+    characters.add(new King());
+    characters.add(new Bishop());
+    characters.add(new Merchant());
+    characters.add(new Architect());
+    characters.add(new Warlord());
     // deal cards to players
+    System.out.println("Dealing cards...");
     for (Player p : players){
       for (int i=0; i<4; i++){
         Card c = deck.pop();
         p.takeCard(c);
       }
     }
+    System.out.printf("Starting Citadel with %d players...\n", numPlayers);
+    System.out.println("You are player 1");
+  }
+
+  private int numDistrictGoal = 8;
+
+  public void setNumDistrictGoal(int num)
+  {
+    numDistrictGoal = num;
+  }
+
+  public boolean isGameOver()
+  {
     for (Player p : players){
-      System.out.print(p.disp()+": ");
-      p.showCard();
+      if (p.getNumPlacedCards() >= numDistrictGoal) return true;
     }
+    return false;
+  }
+
+  public void characterSelection()
+  {
+    ;
   }
 
 	public App()
@@ -110,6 +142,9 @@ public class App {
       return;
     }
     initialSetup();
+    while (!isGameOver()){
+      ;
+    }
   }
 
   public static void main(String[] args)

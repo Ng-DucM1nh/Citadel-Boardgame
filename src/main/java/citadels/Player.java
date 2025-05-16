@@ -8,7 +8,8 @@ public class Player
   private int gold;
   private int id;
   private boolean crown;
-  private ArrayList<Card> cards; 
+  private ArrayList<Card> cards;
+  private ArrayList<Card> placedCards;
 
   public Player(int id)
   {
@@ -17,6 +18,7 @@ public class Player
     this.id = id;
     crown = false;
     cards = new ArrayList<>();
+    placedCards = new ArrayList<>();
   }
 
   public int getId()
@@ -38,6 +40,11 @@ public class Player
   {
     if (card == null) return;
     cards.add(card);
+  }
+
+  public int getNumPlacedCards()
+  {
+    return placedCards.size();
   }
 
   public String disp()
