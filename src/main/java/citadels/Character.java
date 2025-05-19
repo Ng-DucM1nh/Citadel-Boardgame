@@ -9,4 +9,9 @@ public class Character
   {
     System.out.printf("%s: %s\n", name, description);
   }
+
+  public String getName()
+  {
+    return name;
+  }
 }

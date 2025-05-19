@@ -9,12 +9,14 @@ import java.io.*;
 import java.util.*;
 
 public class App {
-	
+  static final String promptArrow = "> ";
+
 	private File cardsFile;
   private ArrayList<Player> players;
   private Crown crown;
   private Deck deck;
   private ArrayList<Character> characters;
+  private Scanner scanner;
 
   public void getCardsData() throws FileNotFoundException
   {
@@ -65,9 +67,16 @@ public class App {
     crown = new Crown();
     characters = new ArrayList<>();
     // prompt for the number of players
-    Scanner scanner = new Scanner(System.in);
+    
     System.out.print("Enter how many players [4-7]:\n> ");
-    int numPlayers = scanner.nextInt();
+    int numPlayers = -1;
+    try{
+      numPlayers = scanner.nextInt();
+    }
+    catch (Exception e){
+      System.out.println("Invalid number of players");
+      System.exit(1);
+    }
     if (numPlayers < 4 || numPlayers > 7){
       System.out.println("Invalid number of players");
       System.exit(1);
@@ -81,11 +90,6 @@ public class App {
     Random rand = new Random(System.currentTimeMillis());
     int crownPlayerId = rand.nextInt(numPlayers);
     assignCrown(crownPlayerId);
-    // rotate the crowned player to the first index in the list
-    while (players.get(0).getId() != crownPlayerId){
-      Player p = players.get(0);
-      players.remove(0); players.add(p);
-    }
     // shuffle deck
     System.out.println("Shuffling deck...");
     deck.shuffle();
@@ -125,14 +129,113 @@ public class App {
     }
     return false;
   }
+  
+  public ArrayList<Character> chooseCharacter(Player player, ArrayList<Character> charList, Character facedownChar)
+  {
+    if (players.size() == 7 && charList.size() == 1) charList.add(facedownChar);
+    if (player.getId() == 0){
+      int l = 0, r = charList.size()-1;
+      System.out.printf("Choose a character from the list [%d..%d]:\n", l, r);
+      for (int i=0; i<charList.size(); i++){
+        System.out.printf("%d. %s\n", i, charList.get(i).getName());
+      }
+      while (true){
+        System.out.print(promptArrow);
+        int pos = -1;
+        try{
+          pos = scanner.nextInt();
+        }
+        catch(Exception e){
+          scanner.nextLine();
+          System.out.println("Invalid character");
+          continue;
+        }
+        scanner.nextLine();
+        if (pos < l || pos > r){
+          System.out.println("Invalid character");
+        }
+        else{
+          player.setCharacter(charList.get(pos));
+          charList.remove(pos);
+          break;
+        }
+      }
+    }
+    else{
+      // bot
+      player.setCharacter(charList.get(0));
+      charList.remove(0);
+    }
+    System.out.printf("Player %d chose a character.\n", player.getId());
+    return charList;
+  }
+
+  public boolean executeCommand(String command)
+  {
+    System.out.println("~~~"+command+"~~~");
+    if (command.equals("t")){
+      return true;
+    }
+    return false;
+  }
 
   public void characterSelection()
   {
-    ;
+    // rotate the crowned player to the first index in the list
+    while (!players.get(0).hasCrown()){
+      Player p = players.get(0);
+      players.remove(0);
+      players.add(p);
+    }
+    // System.out.println("player after rotation");
+    // for (Player p : players){
+    //   System.out.println(p.disp());
+    // }
+    // shuffle character cards and remove some cards
+    Collections.shuffle(characters, new Random(System.currentTimeMillis()));
+    Character facedownChar = characters.get(0);
+    characters.remove(0);
+    System.out.println("A mystery character was removed.");
+    int faceups = -1;
+    switch(players.size()){
+      case 4:
+        faceups = 2;
+        break;
+      case 5:
+        faceups = 1;
+        break;
+      case 6:
+        faceups = 0;
+        break;
+      case 7:
+        faceups = 0;
+        break;
+    }
+    for (int i=characters.size()-1; i>=0 && faceups > 0; i--){
+      Character c = characters.get(i);
+      if (c.getName() == "King") continue;
+      System.out.printf("%s was removed.\n", c.getName());
+      characters.remove(i);
+      faceups--;
+    }
+    System.out.println("remaining chars");
+    for (Character c : characters){
+      c.desc();
+    }
+    // characters = chooseCharacter(players.get(0), characters, facedownChar);
+    for (Player player : players){
+      characters = chooseCharacter(player, characters, facedownChar);
+      while (true){
+        System.out.print(promptArrow);
+        String cmd = scanner.nextLine();
+        if (executeCommand(cmd)) break;
+      }
+    }
   }
 
 	public App()
   {
+    scanner = new Scanner(System.in);
     try{
       getCardsData();
     }
@@ -143,7 +246,8 @@ public class App {
     }
     initialSetup();
     while (!isGameOver()){
-      ;
+      characterSelection();
+      break;
     }
   }
 

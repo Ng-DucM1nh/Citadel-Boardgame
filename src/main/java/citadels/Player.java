@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Player
 {
-  private Object character;
+  private Character character;
   private int gold;
   private int id;
   private boolean crown;
@@ -45,6 +45,11 @@ public class Player
   public int getNumPlacedCards()
   {
     return placedCards.size();
+  }
+
+  public void setCharacter(Character character)
+  {
+    this.character = character;
   }
 
   public String disp()
