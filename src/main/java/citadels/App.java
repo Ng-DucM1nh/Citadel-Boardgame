@@ -72,6 +72,7 @@ public class App {
     int numPlayers = -1;
     try{
       numPlayers = scanner.nextInt();
+      scanner.nextLine();
     }
     catch (Exception e){
       System.out.println("Invalid number of players");
@@ -82,7 +83,7 @@ public class App {
       System.exit(1);
     }
     // add players object to list
-    for (int id=0; id<numPlayers; id++){
+    for (int id=1; id<=numPlayers; id++){
       Player p = new Player(id);
       players.add(p);
     }
@@ -133,7 +134,7 @@ public class App {
   public ArrayList<Character> chooseCharacter(Player player, ArrayList<Character> charList, Character facedownChar)
   {
     if (players.size() == 7 && charList.size() == 1) charList.add(facedownChar);
-    if (player.getId() == 0){
+    if (player.getId() == 1){
       int l = 0, r = charList.size()-1;
       System.out.printf("Choose a character from the list [%d..%d]:\n", l, r);
       for (int i=0; i<charList.size(); i++){
@@ -170,8 +171,10 @@ public class App {
     return charList;
   }
 
-  public boolean executeCommand(String command)
+  public boolean prompt()
   {
+    System.out.print(promptArrow);
+    String command = scanner.nextLine();
     System.out.println("~~~"+command+"~~~");
     if (command.equals("t")){
       return true;
@@ -186,6 +189,12 @@ public class App {
       Player p = players.get(0);
       players.remove(0);
       players.add(p);
+    }
+    System.out.printf("Player %d is the crowned player and goes first.\n", players.get(0).getId());
+    System.out.println("Press t to process turns");
+    System.out.println("================================\nSELECTION PHASE\n================================");
+    while (true){
+      if (prompt()) break;
     }
     // System.out.println("player after rotation");
     // for (Player p : players){
@@ -218,17 +227,15 @@ public class App {
       characters.remove(i);
       faceups--;
     }
-    System.out.println("remaining chars");
-    for (Character c : characters){
-      c.desc();
-    }
+    // System.out.println("remaining chars");
+    // for (Character c : characters){
+    //   c.desc();
+    // }
     // characters = chooseCharacter(players.get(0), characters, facedownChar);
     for (Player player : players){
       characters = chooseCharacter(player, characters, facedownChar);
       while (true){
-        System.out.print(promptArrow);
-        String cmd = scanner.nextLine();
-        if (executeCommand(cmd)) break;
+        if (prompt()) break;
       }
     }
   }
