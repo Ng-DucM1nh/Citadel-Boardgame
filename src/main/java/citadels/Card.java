@@ -14,7 +14,7 @@ public class Card
     this.color = color;
     this.cost = cost;
     this.point = cost;
-    description = "";
+    description = "A normal card with no ability";
   }
 
   public Card(String name, String color, int cost, int point, String description)
@@ -46,11 +46,16 @@ public class Card
     return point;
   }
 
+  public String getDesc()
+  {
+    return description;
+  }
+
   public String display()
   {
     return name+" ["+color+String.valueOf(cost)+"]";
   }
-  
+
   public String disp()
   {
     return name+" "+color+String.valueOf(cost)+" "+description;

@@ -58,6 +58,12 @@ public class Player
     return cards;
   }
 
+  public Card getCardAtPos(int pos)
+  {
+    if (pos < 0 || pos >= cards.size()) return null;
+    return cards.get(pos);
+  }
+
   public Character getCharacter()
   {
     return character;

@@ -260,6 +260,36 @@ public class App {
     }
   }
 
+  public void infoCommand(String[] tokens)
+  {
+    if (tokens.length != 2){
+      System.out.println("Invalid parameter.");
+      System.out.println("Expected \"info <H>\" or \"info <name>\"");
+      return;
+    }
+    for (Character character : characters){
+      if (character.getName().equals(tokens[1])){
+        character.desc();
+        return;
+      }
+    }
+    int pos = -1;
+    try{
+      pos = Integer.parseInt(tokens[1]);
+    }
+    catch (Exception e){
+      System.out.printf("No character named %s. Invalid card position %s\n", tokens[1], tokens[1]);
+      return;
+    }
+    int numCards = humanPlayer.getNumCards();
+    if (pos < 1 || pos > numCards){
+      System.out.printf("No character named %s. Invalid card position %s\n", tokens[1], tokens[1]);
+      return;
+    }
+    Card card = humanPlayer.getCardAtPos(pos-1);
+    System.out.printf("%s: %s\n", card.getName(), card.getDesc());
+  }
+
   public boolean prompt(boolean inTurn)
   {
     System.out.print(promptArrow);
@@ -291,6 +321,10 @@ public class App {
     }
     if (command.equals("all")){
       allCommand();
+      return false;
+    }
+    if (tokens[0].equals("info")){
+      infoCommand(tokens);
       return false;
     }
     return false;
