@@ -212,6 +212,40 @@ public class App {
     humanPlayer.build(pos-1);
   }
 
+  public void citadelCommand(String[] tokens)
+  {
+    if (tokens.length > 2){
+      System.out.println("Invalid parameter");
+      return;
+    }
+    int playerId = -1;
+    if (tokens.length == 1){
+      playerId = 1;
+    }
+    else{
+      try{
+        playerId = Integer.parseInt(tokens[1]);
+      }
+      catch (Exception e){
+        System.out.println("Invalid player id");
+        return;
+      }
+    }
+    if (playerId < 1 || playerId > players.size()){
+      System.out.println("Invalid player id");
+      return;
+    }
+    Player player = players.get(playerId-1);
+    System.out.printf("Player %d has built:\n", playerId);
+    HashMap<Card,Integer> placedCards = player.getPlacedCards();
+    for (Card card : placedCards.keySet()){
+      int num = placedCards.get(card);
+      while (num-- > 0){
+        System.out.printf("%s (%s), points: %d\n", card.getName(), card.getColor(), card.getPoint());
+      }
+    }
+  }
+
   public boolean prompt(boolean inTurn)
   {
     System.out.print(promptArrow);
@@ -234,7 +268,12 @@ public class App {
       return false;
     }
     if (command.equals("end")){
+      if (inTurn) System.out.println("You ended your turn.");
       return (inTurn ? true : false);
+    }
+    if (tokens[0].equals("citadel") || tokens[0].equals("list") || tokens[0].equals("city")){
+      citadelCommand(tokens);
+      return false;
     }
     return false;
   }
@@ -292,6 +331,11 @@ public class App {
       }
     }
     addCharacters();
+    while (players.get(0).getId() != 1){
+      Player p = players.get(0);
+      players.remove(0);
+      players.add(p);
+    }
   }
 
   public void turn()

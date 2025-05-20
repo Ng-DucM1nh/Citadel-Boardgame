@@ -91,7 +91,13 @@ public class Player
     }
     gold -= card.getCost();
     placedCards.put(card, 1);
-    cards.remove(0);
+    cards.remove(pos);
+    System.out.printf("Built %s [%s%d]\n", card.getName(), card.getColor(), card.getCost());
+  }
+
+  public HashMap<Card,Integer> getPlacedCards()
+  {
+    return placedCards;
   }
 
   public String disp()

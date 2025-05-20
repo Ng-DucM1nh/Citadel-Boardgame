@@ -41,6 +41,11 @@ public class Card
     return cost;
   }
 
+  public int getPoint()
+  {
+    return point;
+  }
+
   public String disp()
   {
     return name+" "+color+String.valueOf(cost)+" "+description;
