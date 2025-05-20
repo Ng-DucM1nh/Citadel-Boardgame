@@ -190,9 +190,30 @@ public class App {
     }
   }
 
-  public void goldCommand()
+  public void goldCommand(String[] tokens)
   {
-    System.out.printf("You have %d gold.\n", humanPlayer.getGold());
+    if (tokens.length > 2){
+      System.out.println("Invalid parameter.");
+      System.out.println("Expected \"gold [p]\".");
+      return;
+    }
+    if (tokens.length == 1){
+      System.out.printf("You have %d gold.\n", humanPlayer.getGold());
+      return;
+    }
+    int playerId = -1;
+    try{
+      playerId = Integer.parseInt(tokens[1]);
+    }
+    catch (Exception e){
+      System.out.println("Invalid player id.");
+      return;
+    }
+    if (playerId < 1 || playerId > players.size()){
+      System.out.println("Invalid player id.");
+      return;
+    }
+    System.out.printf("Player %d has %d gold.\n", playerId, players.get(playerId-1).getGold());
   }
 
   public void buildCommand(String[] tokens)
@@ -312,8 +333,8 @@ public class App {
       handCommand();
       return false;
     }
-    if (command.equals("gold")){
-      goldCommand();
+    if (tokens[0].equals("gold")){
+      goldCommand(tokens);
       return false;
     }
     if (tokens[0].equals("build")){
