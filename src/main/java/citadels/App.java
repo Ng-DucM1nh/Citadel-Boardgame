@@ -290,6 +290,15 @@ public class App {
     System.out.printf("%s: %s\n", card.getName(), card.getDesc());
   }
 
+  public void helpCommand()
+  {
+    System.out.println("Available commands:\ninfo : show information about a character or building\nt : processes turns\n");
+    System.out.println("all : shows all current game info\ncitadel/list/city : shows districts built by a player");
+    System.out.println("hand : shows cards in hand\ngold [p] : shows gold of a player\n");
+    System.out.println("build <place in hand> : Builds a building into your city");
+    System.out.println("action : Gives info about your special action and how to perform it\nend : Ends your turn");
+  }
+
   public boolean prompt(boolean inTurn)
   {
     System.out.print(promptArrow);
@@ -325,6 +334,10 @@ public class App {
     }
     if (tokens[0].equals("info")){
       infoCommand(tokens);
+      return false;
+    }
+    if (command.equals("help")){
+      helpCommand();
       return false;
     }
     return false;
