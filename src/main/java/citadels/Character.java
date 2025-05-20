@@ -1,5 +1,8 @@
 package citadels;
 
+import java.util.Scanner;
+import java.util.ArrayList;
+
 public class Character
 {
   String name;
@@ -13,5 +16,10 @@ public class Character
   public String getName()
   {
     return name;
+  }
+
+  public String promptSkill(Scanner scanner, ArrayList<Character> characters)
+  {
+    return "";
   }
 }

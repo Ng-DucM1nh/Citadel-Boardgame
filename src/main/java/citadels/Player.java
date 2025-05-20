@@ -2,6 +2,7 @@ package citadels;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Scanner;
 
 public class Player
 {
@@ -11,6 +12,7 @@ public class Player
   private boolean crown;
   private ArrayList<Card> cards;
   private HashMap<Card,Integer> placedCards;
+  private boolean killed;
 
   public Player(int id)
   {
@@ -20,6 +22,7 @@ public class Player
     crown = false;
     cards = new ArrayList<>();
     placedCards = new HashMap<>();
+    killed = false;
   }
 
   public int getId()
@@ -84,6 +87,16 @@ public class Player
     gold += a;
   }
 
+  public boolean isKilled()
+  {
+    return killed;
+  }
+
+  public void setKilled(boolean killed)
+  {
+    this.killed = killed;
+  }
+
   public void build(int pos)
   {
     System.out.printf("**build called with pos = %d**\n", pos);
@@ -110,6 +123,14 @@ public class Player
   {
     return placedCards;
   }
+
+  // public String promptSkill(Scanner scanner, ArrayList<Character> characters)
+  // {
+  //   if (character.getName().equals("Assassin") == false && character.getName().equals("Thief") == false) return;
+  //   if (character.getName().equals("Assassin")){
+  //     character.promptSkill(scanner, characters);
+  //   }
+  // }
 
   public String disp()
   {
