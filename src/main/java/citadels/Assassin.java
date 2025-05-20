@@ -11,8 +11,10 @@ public class Assassin extends Character
     description = "Select another character whom you wish to kill. The killed character loses their turn.";
   }
 
-  public String promptSkill(Scanner scanner, ArrayList<Character> characters)
+  public void promptSkill(App app)
   {
+    Scanner scanner = app.getScanner();
+    ArrayList<Character> characters = app.getCharacters();
     System.out.println("Who do you want to kill? Choose a character from 2-8:");
     int c = -1;
     while (true){
@@ -34,6 +36,8 @@ public class Assassin extends Character
     c--;
     String name = characters.get(c).getName(); 
     System.out.printf("You chose to kill the %s\n", name);
-    return name;
+    Player killedPlayer = app.findPlayerWithChar(name);
+    if (killedPlayer == null) return;
+    killedPlayer.setKilled(true);
   }
 }

@@ -19,6 +19,16 @@ public class App {
   private Scanner scanner;
   private Player humanPlayer;
 
+  public Scanner getScanner()
+  {
+    return scanner;
+  }
+
+  public ArrayList<Character> getCharacters()
+  {
+    return characters;
+  }
+
   public void getCardsData() throws FileNotFoundException
   {
     cardsFile = new File("src/main/resources/citadels/cards.tsv");
@@ -103,9 +113,10 @@ public class App {
     }
     humanPlayer = players.get(0);
     // randomly pick a player to assign the crown to
-    Random rand = new Random(System.currentTimeMillis());
-    int crownPlayerId = rand.nextInt(numPlayers) + 1;
-    assignCrown(crownPlayerId);
+    // Random rand = new Random(System.currentTimeMillis());
+    // int crownPlayerId = rand.nextInt(numPlayers) + 1;
+    // assignCrown(crownPlayerId);
+    assignCrown(1); ///////////////////////////////////////////////////
     // shuffle deck
     System.out.println("Shuffling deck...");
     deck.shuffle();
@@ -380,32 +391,33 @@ public class App {
       if (prompt(false)) break;
     }
     // shuffle character cards and remove some cards
-    Collections.shuffle(characters, new Random(System.currentTimeMillis()));
-    Character facedownChar = characters.get(0);
-    characters.remove(0);
-    System.out.println("A mystery character was removed.");
-    int faceups = -1;
-    switch(players.size()){
-      case 4:
-        faceups = 2;
-        break;
-      case 5:
-        faceups = 1;
-        break;
-      case 6:
-        faceups = 0;
-        break;
-      case 7:
-        faceups = 0;
-        break;
-    }
-    for (int i=characters.size()-1; i>=0 && faceups > 0; i--){
-      Character c = characters.get(i);
-      if (c.getName() == "King") continue;
-      System.out.printf("%s was removed.\n", c.getName());
-      characters.remove(i);
-      faceups--;
-    }
+    // Collections.shuffle(characters, new Random(System.currentTimeMillis()));
+    // Character facedownChar = characters.get(0);
+    // characters.remove(0);
+    // System.out.println("A mystery character was removed.");
+    // int faceups = -1;
+    // switch(players.size()){
+    //   case 4:
+    //     faceups = 2;
+    //     break;
+    //   case 5:
+    //     faceups = 1;
+    //     break;
+    //   case 6:
+    //     faceups = 0;
+    //     break;
+    //   case 7:
+    //     faceups = 0;
+    //     break;
+    // }
+    // for (int i=characters.size()-1; i>=0 && faceups > 0; i--){
+    //   Character c = characters.get(i);
+    //   if (c.getName() == "King") continue;
+    //   System.out.printf("%s was removed.\n", c.getName());
+    //   characters.remove(i);
+    //   faceups--;
+    // }
+    Character facedownChar = null; ////////////////////////////////////////////////////
     for (Player player : players){
       characters = chooseCharacter(player, characters, facedownChar);
       while (true){
@@ -418,6 +430,14 @@ public class App {
       players.remove(0);
       players.add(p);
     }
+  }
+
+  public Player findPlayerWithChar(String charName)
+  {
+    for (Player p : players){
+      if (p.getCharacter().getName().equals(charName)) return p;
+    }
+    return null;
   }
 
   public void promptResource()
@@ -478,8 +498,6 @@ public class App {
   {
     System.out.println("Character choosing is over, action round will now begin.");
     System.out.println("================================\nTURN PHASE\n================================");
-    String killedCharName = "";
-    Player robber = null; String robbedCharName = "";
     for (int i=0; i<8; i++){
       Character character = characters.get(i);
       System.out.printf("%d. %s\n", i+1, character.getName());
@@ -496,14 +514,15 @@ public class App {
         continue;
       }
       System.out.printf("Player %d is the %s\n", player.getId(), character.getName());
-      if (character.getName().equals(killedCharName)){
+      if (player.isKilled()){
         System.out.printf("Player %d loses their turn because they were assassinated.\n", player.getId());
         while (true) if (prompt(false)) break;
         continue;
       }
-      if (character.getName().equals(robbedCharName)){
+      if (player.isRobbed()){
         System.out.printf("The Thief steals %d gold from the %s.\n", player.getGold(), character.getName());
         int gold = player.getGold();
+        Player robber = player.getRobber();
         robber.addGold(gold);
         player.addGold(-gold);
       }
@@ -512,13 +531,7 @@ public class App {
         continue;
       }
       System.out.println("Your turn.");
-      if (character.getName().equals("Assassin")){
-        killedCharName = character.promptSkill(scanner, characters);
-      }
-      if (character.getName().equals("Thief")){
-        robbedCharName = character.promptSkill(scanner, characters);
-        robber = player;
-      }
+      character.promptSkill(this);
       player.passiveSkill();
       if (character.getName().equals("Architect")){
         for (int j=0; j<2; j++){

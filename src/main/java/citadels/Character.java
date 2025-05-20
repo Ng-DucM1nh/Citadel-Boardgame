@@ -19,10 +19,7 @@ public class Character
     return name;
   }
 
-  public String promptSkill(Scanner scanner, ArrayList<Character> characters)
-  {
-    return "";
-  }
+  public void promptSkill(App app){}
 
   public int getNumBuild()
   {

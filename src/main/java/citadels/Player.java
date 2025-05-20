@@ -13,6 +13,8 @@ public class Player
   private ArrayList<Card> cards;
   private HashMap<Card,Integer> placedCards;
   private boolean killed;
+  private boolean robbed;
+  private Player robber;
 
   public Player(int id)
   {
@@ -23,6 +25,8 @@ public class Player
     cards = new ArrayList<>();
     placedCards = new HashMap<>();
     killed = false;
+    robbed = false;
+    robber = null;
   }
 
   public int getId()
@@ -95,6 +99,22 @@ public class Player
   public void setKilled(boolean killed)
   {
     this.killed = killed;
+  }
+
+  public boolean isRobbed()
+  {
+    return robbed;
+  }
+
+  public Player getRobber()
+  {
+    return robber;
+  }
+
+  public void setRobber(Player robber)
+  {
+    this.robber = robber;
+    this.robbed = true;
   }
 
   public void build(int pos)

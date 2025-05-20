@@ -11,8 +11,10 @@ public class Thief extends Character
     description = "Select another character whom you wish to rob. When a player reveals that character to take his turn, you immediately take all of his gold. You cannot rob the Assassin or the killed character.";
   }
 
-  public String promptSkill(Scanner scanner, ArrayList<Character> characters)
+  public void promptSkill(App app)
   {
+    Scanner scanner = app.getScanner();
+    ArrayList<Character> characters = app.getCharacters();
     System.out.println("Who do you want to rob? Choose a character from 3-8:");
     int c = -1;
     while (true){
@@ -34,6 +36,8 @@ public class Thief extends Character
     c--;
     String name = characters.get(c).getName(); 
     System.out.printf("You chose to rob the %s\n", name);
-    return name;
+    Player robbedPlayer = app.findPlayerWithChar(name);
+    if (robbedPlayer == null) return;
+    robbedPlayer.setRobber(app.findPlayerWithChar("Thief"));
   }
 }
