@@ -7,6 +7,7 @@ public class Character
 {
   String name;
   String description;
+  int numBuild = 1;
 
   public void desc()
   {
@@ -21,5 +22,15 @@ public class Character
   public String promptSkill(Scanner scanner, ArrayList<Character> characters)
   {
     return "";
+  }
+
+  public int getNumBuild()
+  {
+    return numBuild;
+  }
+
+  public void decNumBuild()
+  {
+    numBuild--;
   }
 }

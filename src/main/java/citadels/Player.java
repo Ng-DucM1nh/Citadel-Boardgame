@@ -104,6 +104,10 @@ public class Player
       System.out.println("Invalid card position");
       return;
     }
+    if (character.getNumBuild() <= 0){
+      System.out.println("You can no longer build during this round.");
+      return;
+    }
     Card card = cards.get(pos);
     if (placedCards.containsKey(card)){
       System.out.println("This building is already built");
@@ -113,6 +117,7 @@ public class Player
       System.out.println("U too poor");
       return;
     }
+    character.decNumBuild();
     gold -= card.getCost();
     placedCards.put(card, 1);
     cards.remove(pos);
