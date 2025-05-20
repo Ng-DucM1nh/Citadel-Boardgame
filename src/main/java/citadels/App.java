@@ -485,6 +485,7 @@ public class App {
     System.out.println("Character choosing is over, action round will now begin.");
     System.out.println("================================\nTURN PHASE\n================================");
     String killedCharName = "";
+    Player robber = null; String robbedCharName = "";
     for (int i=0; i<8; i++){
       Character character = characters.get(i);
       System.out.printf("%d. %s\n", i+1, character.getName());
@@ -497,27 +498,36 @@ public class App {
       boolean inTurn = false;
       if (player == null){
         System.out.printf("No one is the %s\n", character.getName());
+        while (true) if (prompt(false)) break;
+        continue;
       }
-      else{
-        System.out.printf("Player %d is the %s\n", player.getId(), character.getName());
-        if (character.getName().equals(killedCharName)){
-          System.out.printf("Player %d loses their turn because they were assassinated.\n", player.getId());
-        }
-        else if (player.getId() == 1){
-          System.out.println("Your turn.");
-          inTurn = true;
-        }
+      System.out.printf("Player %d is the %s\n", player.getId(), character.getName());
+      if (character.getName().equals(killedCharName)){
+        System.out.printf("Player %d loses their turn because they were assassinated.\n", player.getId());
+        while (true) if (prompt(false)) break;
+        continue;
       }
-      if (inTurn){
-        if (character.getName().equals("Assassin")){
-          killedCharName = character.promptSkill(scanner, characters);
-        }
-        System.out.println(killedCharName);
-        promptResource();
+      if (character.getName().equals(robbedCharName)){
+        System.out.printf("The Thief steals %d gold from the %s.\n", player.getGold(), character.getName());
+        int gold = player.getGold();
+        robber.addGold(gold);
+        player.addGold(-gold);
       }
-      while (true){
-        if (prompt(inTurn)) break;
+      if (player.getId() != 1){
+        while (true) if (prompt(false)) break;
+        continue;
       }
+      System.out.println("Your turn.");
+      if (character.getName().equals("Assassin")){
+        killedCharName = character.promptSkill(scanner, characters);
+      }
+      if (character.getName().equals("Thief")){
+        robbedCharName = character.promptSkill(scanner, characters);
+        robber = player;
+      }
+      System.out.println(killedCharName);
+      promptResource();
+      while (true) if (prompt(true)) break;
     }
   }
 
