@@ -129,13 +129,37 @@ public class Player
     return placedCards;
   }
 
-  // public String promptSkill(Scanner scanner, ArrayList<Character> characters)
-  // {
-  //   if (character.getName().equals("Assassin") == false && character.getName().equals("Thief") == false) return;
-  //   if (character.getName().equals("Assassin")){
-  //     character.promptSkill(scanner, characters);
-  //   }
-  // }
+  public void passiveSkill()
+  {
+    HashMap<String,Integer> colorCount = new HashMap<>();
+    colorCount.put("red", 0);
+    colorCount.put("yellow", 0);
+    colorCount.put("green", 0);
+    colorCount.put("blue", 0);
+    for (Card c : placedCards.keySet()){
+      String color = c.getColor();
+      colorCount.put(color, colorCount.get(color)+1);
+    }
+    int cnt = -1;
+    if (character.getName().equals("King")){
+      cnt = colorCount.get("yellow");
+    }
+    if (character.getName().equals("Bishop")){
+      cnt = colorCount.get("blue");
+    }
+    if (character.getName().equals("Merchant")){
+      System.out.printf("Player %d receives 1 extra gold.\n", id);
+      addGold(1);
+      cnt = colorCount.get("green");
+    }
+    if (character.getName().equals("Warlord")){
+      cnt = colorCount.get("red");
+    }
+    if (cnt != -1){
+      addGold(cnt);
+      System.out.printf("Player %d receives %d gold from their signature district color.\n", id, cnt);
+    }
+  } 
 
   public String disp()
   {

@@ -103,10 +103,9 @@ public class App {
     }
     humanPlayer = players.get(0);
     // randomly pick a player to assign the crown to
-    // Random rand = new Random(System.currentTimeMillis());
-    // int crownPlayerId = rand.nextInt(numPlayers) + 1;
-    // assignCrown(crownPlayerId);
-    assignCrown(1); ///////////////////////////////////////////////////////
+    Random rand = new Random(System.currentTimeMillis());
+    int crownPlayerId = rand.nextInt(numPlayers) + 1;
+    assignCrown(crownPlayerId);
     // shuffle deck
     System.out.println("Shuffling deck...");
     deck.shuffle();
@@ -380,38 +379,33 @@ public class App {
     while (true){
       if (prompt(false)) break;
     }
-    // System.out.println("player after rotation");
-    // for (Player p : players){
-    //   System.out.println(p.disp());
-    // }
     // shuffle character cards and remove some cards
-    // Collections.shuffle(characters, new Random(System.currentTimeMillis()));
-    // Character facedownChar = characters.get(0);
-    // characters.remove(0);
-    // System.out.println("A mystery character was removed.");
-    // int faceups = -1;
-    // switch(players.size()){
-    //   case 4:
-    //     faceups = 2;
-    //     break;
-    //   case 5:
-    //     faceups = 1;
-    //     break;
-    //   case 6:
-    //     faceups = 0;
-    //     break;
-    //   case 7:
-    //     faceups = 0;
-    //     break;
-    // }
-    // for (int i=characters.size()-1; i>=0 && faceups > 0; i--){
-    //   Character c = characters.get(i);
-    //   if (c.getName() == "King") continue;
-    //   System.out.printf("%s was removed.\n", c.getName());
-    //   characters.remove(i);
-    //   faceups--;
-    // }
-    Character facedownChar = null; ////////////////////////
+    Collections.shuffle(characters, new Random(System.currentTimeMillis()));
+    Character facedownChar = characters.get(0);
+    characters.remove(0);
+    System.out.println("A mystery character was removed.");
+    int faceups = -1;
+    switch(players.size()){
+      case 4:
+        faceups = 2;
+        break;
+      case 5:
+        faceups = 1;
+        break;
+      case 6:
+        faceups = 0;
+        break;
+      case 7:
+        faceups = 0;
+        break;
+    }
+    for (int i=characters.size()-1; i>=0 && faceups > 0; i--){
+      Character c = characters.get(i);
+      if (c.getName() == "King") continue;
+      System.out.printf("%s was removed.\n", c.getName());
+      characters.remove(i);
+      faceups--;
+    }
     for (Player player : players){
       characters = chooseCharacter(player, characters, facedownChar);
       while (true){
@@ -525,7 +519,18 @@ public class App {
         robbedCharName = character.promptSkill(scanner, characters);
         robber = player;
       }
-      System.out.println(killedCharName);
+      player.passiveSkill();
+      if (character.getName().equals("Architect")){
+        for (int j=0; j<2; j++){
+          Card card = deck.pop();  
+          player.takeCard(card);
+          System.out.printf("Player %d receives extra district card %s.\n", player.getId(), card.display());
+        }
+      }
+      if (character.getName().equals("King")){
+        assignCrown(player.getId());
+        System.out.printf("Player %d receives the crown and will be the first to choose characters on the next round.\n", player.getId());
+      }
       promptResource();
       while (true) if (prompt(true)) break;
     }
@@ -547,6 +552,7 @@ public class App {
     while (!isGameOver()){
       characterSelection();
       turn();
+      System.out.println("Everyone is done, new round!");
     }
   }
 

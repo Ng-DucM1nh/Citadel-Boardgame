@@ -6,5 +6,6 @@ public class Architect extends Character
   {
     name = "Architect";
     description = "Gains two extra district cards. Can build up to 3 districts per turn.";
+    numBuild = 3;
   }
 }
