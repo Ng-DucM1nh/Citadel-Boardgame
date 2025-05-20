@@ -48,6 +48,11 @@ public class Player
     return placedCards.size();
   }
 
+  public int getNumCards()
+  {
+    return cards.size();
+  }
+
   public ArrayList<Card> getCards()
   {
     return cards;
@@ -92,7 +97,7 @@ public class Player
     gold -= card.getCost();
     placedCards.put(card, 1);
     cards.remove(pos);
-    System.out.printf("Built %s [%s%d]\n", card.getName(), card.getColor(), card.getCost());
+    System.out.printf("Built %s\n", card.display());
   }
 
   public HashMap<Card,Integer> getPlacedCards()

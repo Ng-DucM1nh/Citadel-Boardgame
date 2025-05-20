@@ -216,6 +216,7 @@ public class App {
   {
     if (tokens.length > 2){
       System.out.println("Invalid parameter");
+      System.out.println("Expected \"citadel|list|city [p]\"");
       return;
     }
     int playerId = -1;
@@ -246,6 +247,19 @@ public class App {
     }
   }
 
+  public void allCommand()
+  {
+    for (int i=0; i<players.size(); i++){
+      Player player = players.get(i);
+      System.out.printf("Player %d%s: cards=%d gold=%d city=", player.getId(), (player.getId() == 1 ? " (you)" : ""), player.getNumCards(), player.getGold());
+      HashMap<Card,Integer> placedCards = player.getPlacedCards();
+      for (Card card : placedCards.keySet()){
+        System.out.print(card.display()+" ");
+      }
+      System.out.println();
+    }
+  }
+
   public boolean prompt(boolean inTurn)
   {
     System.out.print(promptArrow);
@@ -273,6 +287,10 @@ public class App {
     }
     if (tokens[0].equals("citadel") || tokens[0].equals("list") || tokens[0].equals("city")){
       citadelCommand(tokens);
+      return false;
+    }
+    if (command.equals("all")){
+      allCommand();
       return false;
     }
     return false;
