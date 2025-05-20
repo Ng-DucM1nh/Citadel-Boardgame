@@ -1,6 +1,7 @@
 package citadels;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Player
 {
@@ -9,7 +10,7 @@ public class Player
   private int id;
   private boolean crown;
   private ArrayList<Card> cards;
-  private ArrayList<Card> placedCards;
+  private HashMap<Card,Integer> placedCards;
 
   public Player(int id)
   {
@@ -18,7 +19,7 @@ public class Player
     this.id = id;
     crown = false;
     cards = new ArrayList<>();
-    placedCards = new ArrayList<>();
+    placedCards = new HashMap<>();
   }
 
   public int getId()
@@ -47,9 +48,50 @@ public class Player
     return placedCards.size();
   }
 
+  public ArrayList<Card> getCards()
+  {
+    return cards;
+  }
+
+  public Character getCharacter()
+  {
+    return character;
+  }
+
   public void setCharacter(Character character)
   {
     this.character = character;
+  }
+
+  public int getGold()
+  {
+    return gold;
+  }
+
+  public void addGold(int a)
+  {
+    gold += a;
+  }
+
+  public void build(int pos)
+  {
+    System.out.printf("**build called with pos = %d**\n", pos);
+    if (pos < 0 || pos >= cards.size()){
+      System.out.println("Invalid card position");
+      return;
+    }
+    Card card = cards.get(pos);
+    if (placedCards.containsKey(card)){
+      System.out.println("This building is already built");
+      return;
+    }
+    if (gold < card.getCost()){
+      System.out.println("U too poor");
+      return;
+    }
+    gold -= card.getCost();
+    placedCards.put(card, 1);
+    cards.remove(0);
   }
 
   public String disp()

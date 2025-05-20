@@ -17,6 +17,7 @@ public class App {
   private Deck deck;
   private ArrayList<Character> characters;
   private Scanner scanner;
+  private Player humanPlayer;
 
   public void getCardsData() throws FileNotFoundException
   {
@@ -46,7 +47,7 @@ public class App {
 
   public void assignCrown(int crownPlayerId)
   {
-    if (crownPlayerId < 0 || crownPlayerId >= players.size()){
+    if (crownPlayerId < 1 || crownPlayerId > players.size()){
       throw new RuntimeException("invalid crownPlayerId");
     }
     for (int i=0; i<players.size(); i++){
@@ -59,6 +60,19 @@ public class App {
         crown.setOwner(p);
       }
     }
+  }
+
+  public void addCharacters()
+  {
+    characters.clear();
+    characters.add(new Assassin());
+    characters.add(new Thief());
+    characters.add(new Magician());
+    characters.add(new King());
+    characters.add(new Bishop());
+    characters.add(new Merchant());
+    characters.add(new Architect());
+    characters.add(new Warlord());
   }
 
   public void initialSetup()
@@ -87,23 +101,17 @@ public class App {
       Player p = new Player(id);
       players.add(p);
     }
+    humanPlayer = players.get(0);
     // randomly pick a player to assign the crown to
     Random rand = new Random(System.currentTimeMillis());
-    int crownPlayerId = rand.nextInt(numPlayers);
+    int crownPlayerId = rand.nextInt(numPlayers) + 1;
     assignCrown(crownPlayerId);
     // shuffle deck
     System.out.println("Shuffling deck...");
     deck.shuffle();
     // add character cards
     System.out.println("Adding characters...");
-    characters.add(new Assassin());
-    characters.add(new Thief());
-    characters.add(new Magician());
-    characters.add(new King());
-    characters.add(new Bishop());
-    characters.add(new Merchant());
-    characters.add(new Architect());
-    characters.add(new Warlord());
+    addCharacters();
     // deal cards to players
     System.out.println("Dealing cards...");
     for (Player p : players){
@@ -111,6 +119,7 @@ public class App {
         Card c = deck.pop();
         p.takeCard(c);
       }
+      p.addGold(2);
     }
     System.out.printf("Starting Citadel with %d players...\n", numPlayers);
     System.out.println("You are player 1");
@@ -135,27 +144,28 @@ public class App {
   {
     if (players.size() == 7 && charList.size() == 1) charList.add(facedownChar);
     if (player.getId() == 1){
-      int l = 0, r = charList.size()-1;
+      int l = 1, r = charList.size();
       System.out.printf("Choose a character from the list [%d..%d]:\n", l, r);
       for (int i=0; i<charList.size(); i++){
-        System.out.printf("%d. %s\n", i, charList.get(i).getName());
+        System.out.printf("%d. %s\n", i+1, charList.get(i).getName());
       }
       while (true){
         System.out.print(promptArrow);
         int pos = -1;
         try{
           pos = scanner.nextInt();
+          scanner.nextLine();
         }
         catch(Exception e){
           scanner.nextLine();
           System.out.println("Invalid character");
           continue;
         }
-        scanner.nextLine();
         if (pos < l || pos > r){
           System.out.println("Invalid character");
         }
         else{
+          pos--;
           player.setCharacter(charList.get(pos));
           charList.remove(pos);
           break;
@@ -171,19 +181,67 @@ public class App {
     return charList;
   }
 
-  public boolean prompt()
+  public void handCommand()
+  {
+    System.out.printf("You have %d gold. Cards in hand:\n", humanPlayer.getGold());
+    ArrayList<Card> cards = humanPlayer.getCards();
+    for (int i=0; i<cards.size(); i++){
+      System.out.printf("%d. %s (%s), cost: %d\n", i+1, cards.get(i).getName(), cards.get(i).getColor(), cards.get(i).getCost());
+    }
+  }
+
+  public void goldCommand()
+  {
+    System.out.printf("You have %d gold.\n", humanPlayer.getGold());
+  }
+
+  public void buildCommand(String[] tokens)
+  {
+    if (tokens.length != 2){
+      System.out.println("Invalid parameter.\nExpected \"build <H>\"");
+      return;
+    }
+    int pos = -1;
+    try{
+      pos = Integer.parseInt(tokens[1]);
+    }
+    catch (Exception e){
+      System.out.println("Invalid card position");
+      return;
+    }
+    humanPlayer.build(pos-1);
+  }
+
+  public boolean prompt(boolean inTurn)
   {
     System.out.print(promptArrow);
     String command = scanner.nextLine();
     System.out.println("~~~"+command+"~~~");
+    String[] tokens = command.split(" ");
     if (command.equals("t")){
-      return true;
+      return (inTurn ? false : true);
+    }
+    if (command.equals("hand")){
+      handCommand();
+      return false;
+    }
+    if (command.equals("gold")){
+      goldCommand();
+      return false;
+    }
+    if (tokens[0].equals("build")){
+      if (inTurn) buildCommand(tokens);
+      return false;
+    }
+    if (command.equals("end")){
+      return (inTurn ? true : false);
     }
     return false;
   }
 
   public void characterSelection()
   {
+    // System.out.println("**characterSelection called**");
     // rotate the crowned player to the first index in the list
     while (!players.get(0).hasCrown()){
       Player p = players.get(0);
@@ -194,7 +252,7 @@ public class App {
     System.out.println("Press t to process turns");
     System.out.println("================================\nSELECTION PHASE\n================================");
     while (true){
-      if (prompt()) break;
+      if (prompt(false)) break;
     }
     // System.out.println("player after rotation");
     // for (Player p : players){
@@ -227,15 +285,41 @@ public class App {
       characters.remove(i);
       faceups--;
     }
-    // System.out.println("remaining chars");
-    // for (Character c : characters){
-    //   c.desc();
-    // }
-    // characters = chooseCharacter(players.get(0), characters, facedownChar);
     for (Player player : players){
       characters = chooseCharacter(player, characters, facedownChar);
       while (true){
-        if (prompt()) break;
+        if (prompt(false)) break;
+      }
+    }
+    addCharacters();
+  }
+
+  public void turn()
+  {
+    System.out.println("Character choosing is over, action round will now begin.");
+    System.out.println("================================\nTURN PHASE\n================================");
+    for (int i=0; i<8; i++){
+      Character character = characters.get(i);
+      System.out.printf("%d. %s\n", i+1, character.getName());
+      Player player = null;
+      for (Player p : players){
+        if (!p.getCharacter().getName().equals(character.getName())) continue;
+        player = p;
+        break;
+      }
+      boolean inTurn = false;
+      if (player == null){
+        System.out.printf("No one is the %s\n", character.getName());
+      }
+      else{
+        System.out.printf("Player %d is the %s\n", player.getId(), character.getName());
+        if (player.getId() == 1){
+          System.out.println("Your turn.");
+          inTurn = true;
+        }
+      }
+      while (true){
+        if (prompt(inTurn)) break;
       }
     }
   }
@@ -251,9 +335,14 @@ public class App {
       e.printStackTrace();
       return;
     }
+    // System.out.println("**getCardsData done**");
     initialSetup();
+    // System.out.println("**initialSetup done**");
+
     while (!isGameOver()){
+      // System.out.println("nah");
       characterSelection();
+      turn();
       break;
     }
   }
