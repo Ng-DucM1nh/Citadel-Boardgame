@@ -424,6 +424,60 @@ public class App {
     }
   }
 
+  public void promptResource()
+  {
+    String res = "";
+    while (true){
+      System.out.print("Collect 2 gold or draw two cards and pick one [gold/cards].\n> ");
+      res = scanner.nextLine();
+      if (!res.equals("gold") && !res.equals("cards")){
+        System.out.println("Invalid choice");
+        continue;
+      }
+      break;
+    }
+    if (res.equals("gold")){
+      System.out.println("Player 1 received 2 gold.");
+      humanPlayer.addGold(2);
+      return;
+    }
+    ArrayList<Card> choices = new ArrayList<>();
+    choices.add(deck.pop()); choices.add(deck.pop());
+    int pos = -1;
+    while (true){
+      System.out.print("Pick one of the following cards: 'collect card <option>'.\n");
+      for (int i=0; i<2; i++){
+        Card card = choices.get(i);
+        System.out.printf("%d. %s [%s], cost: %d\n", i+1, card.getName(), card.getColor(), card.getCost());
+      }
+      System.out.print(promptArrow);
+      res = scanner.nextLine();
+      String[] tokens = res.split(" ");
+      if (tokens.length != 3 || !tokens[0].equals("collect") || !tokens[1].equals("card")){
+        System.out.println("Invalid choice.");
+        continue;
+      }
+      try{
+        pos = Integer.parseInt(tokens[2]);
+      }
+      catch (Exception e){
+        System.out.println("Invalid choice.");
+        continue;
+      }
+      if (pos < 1 || pos > 2){
+        System.out.println("Invalid choice.");
+        continue;
+      }
+      break;
+    }
+    pos--;
+    System.out.printf("You chose card %s\n", choices.get(pos).display());
+    humanPlayer.takeCard(choices.get(pos));
+    choices.remove(pos);
+    deck.addCard(choices.get(0));
+    return;
+  }
+
   public void turn()
   {
     System.out.println("Character choosing is over, action round will now begin.");
@@ -447,6 +501,9 @@ public class App {
           System.out.println("Your turn.");
           inTurn = true;
         }
+      }
+      if (inTurn){
+        promptResource();
       }
       while (true){
         if (prompt(inTurn)) break;
