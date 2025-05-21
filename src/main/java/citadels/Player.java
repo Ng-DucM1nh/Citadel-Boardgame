@@ -149,37 +149,14 @@ public class Player
     return placedCards;
   }
 
-  public void passiveSkill()
+  public int countPlacedCardColor(String color)
   {
-    HashMap<String,Integer> colorCount = new HashMap<>();
-    colorCount.put("red", 0);
-    colorCount.put("yellow", 0);
-    colorCount.put("green", 0);
-    colorCount.put("blue", 0);
+    int cnt = 0;
     for (Card c : placedCards.keySet()){
-      String color = c.getColor();
-      colorCount.put(color, colorCount.get(color)+1);
+      if (c.getColor().equals(color)) cnt++;
     }
-    int cnt = -1;
-    if (character.getName().equals("King")){
-      cnt = colorCount.get("yellow");
-    }
-    if (character.getName().equals("Bishop")){
-      cnt = colorCount.get("blue");
-    }
-    if (character.getName().equals("Merchant")){
-      System.out.printf("Player %d receives 1 extra gold.\n", id);
-      addGold(1);
-      cnt = colorCount.get("green");
-    }
-    if (character.getName().equals("Warlord")){
-      cnt = colorCount.get("red");
-    }
-    if (cnt != -1){
-      addGold(cnt);
-      System.out.printf("Player %d receives %d gold from their signature district color.\n", id, cnt);
-    }
-  } 
+    return cnt;
+  }
 
   public String disp()
   {

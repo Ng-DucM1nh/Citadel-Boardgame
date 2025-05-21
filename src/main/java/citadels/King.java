@@ -7,4 +7,13 @@ public class King extends Character
     name = "King";
     description = "Gains one gold for each yellow (noble) district in their city. They receive the crown token and will be the first to choose characters on the next round.";
   }
+
+  public void passiveSkill(App app, Player player)
+  {
+    int gold = player.countPlacedCardColor("yellow");
+    player.addGold(gold);
+    System.out.printf("Player %d receives %d gold from their signature district color.\n", player.getId(), gold);
+    app.assignCrown(player.getId());
+    System.out.printf("Player %d receives the crown and will be the first to choose characters on the next round.\n", player.getId());
+  }
 }

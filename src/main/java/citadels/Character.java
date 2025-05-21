@@ -30,4 +30,6 @@ public class Character
   {
     numBuild--;
   }
+
+  public void passiveSkill(App app, Player player){}
 }
