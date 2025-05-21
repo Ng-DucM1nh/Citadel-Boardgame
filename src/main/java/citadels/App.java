@@ -140,13 +140,21 @@ public class App {
         Card c = deck.pop();
         p.takeCard(c);
       }
-      p.addGold(2);
+      p.addGold(100);
+    }
+    for (int i=0; i<7; i++){
+      players.get(1).addDummyPlacedCard();
     }
     System.out.printf("Starting Citadel with %d players...\n", numPlayers);
     System.out.println("You are player 1");
   }
 
   private int numDistrictGoal = 8;
+
+  public int getNumDistrictGoal()
+  {
+    return numDistrictGoal;
+  }
 
   public void setNumDistrictGoal(int num)
   {
@@ -156,7 +164,7 @@ public class App {
   public boolean isGameOver()
   {
     for (Player p : players){
-      if (p.getNumPlacedCards() >= numDistrictGoal) return true;
+      if (p.isCityCompleted(this)) return true;
     }
     return false;
   }
@@ -565,9 +573,10 @@ public class App {
     }
     initialSetup();
 
-    while (!isGameOver()){
+    while(true){
       characterSelection();
       turn();
+      if (isGameOver()) break;
       System.out.println("Everyone is done, new round!");
     }
   }

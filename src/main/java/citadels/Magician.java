@@ -5,7 +5,7 @@ import java.util.Collections;
 
 public class Magician extends Character
 {
-  int numAction = 1;
+  private int numAction = 1;
 
   public Magician()
   {
@@ -20,13 +20,13 @@ public class Magician extends Character
 
   public boolean action(App app, String[] tokens, Player player)
   {
-    ArrayList<Player> players = app.getPlayers();
     if (tokens.length != 3) return false;
     if (tokens[1].equals("swap") == false && tokens[1].equals("redraw") == false) return false;
     if (numAction <= 0){
       System.out.println("You can no longer use the character's ability for this round.");
-      return false;
+      return true;
     }
+    ArrayList<Player> players = app.getPlayers();
     if (tokens[1].equals("swap")){
       int id = -1;
       try{
@@ -34,11 +34,11 @@ public class Magician extends Character
       }
       catch (Exception e){
         System.out.println("Invalid player number");
-        return false;
+        return true;
       }
       if (id < 1 || id > players.size()){
         System.out.println("Invalid player number");
-        return false;
+        return true;
       }
       id--;
       Player swappedPlayer = app.getPlayers().get(id);
@@ -60,11 +60,11 @@ public class Magician extends Character
         }
         catch (Exception e){
           System.out.println("Invalid card position");
-          return false;
+          return true;
         }
         if (npos < 1 || npos > cards.size()){
           System.out.println("Invalid card position");
-          return false;
+          return true;
         }
         pos.add(npos-1);
       }

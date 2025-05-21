@@ -5,6 +5,7 @@ public class Card
   private String name;
   private String color;
   private int cost;
+  private int destroyCost;
   private int point;
   private String description;
 
@@ -13,6 +14,7 @@ public class Card
     this.name = name;
     this.color = color;
     this.cost = cost;
+    this.destroyCost = cost-1;
     this.point = cost;
     description = "A normal card with no ability";
   }
@@ -22,6 +24,7 @@ public class Card
     this.name = name;
     this.color = color;
     this.cost = cost;
+    this.destroyCost = cost-1;
     this.point = point;
     this.description = description;
   }
@@ -39,6 +42,11 @@ public class Card
   public int getCost()
   {
     return cost;
+  }
+
+  public int getDestroyCost()
+  {
+    return destroyCost;
   }
 
   public int getPoint()

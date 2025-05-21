@@ -55,6 +55,15 @@ public class Player
     return placedCards.size();
   }
 
+  public Card findPlacedCardByName(String cardName)
+  {
+    for (Card c : placedCards.keySet()){
+      if (c.getName().equals(cardName) == false) continue;
+      return c;
+    }
+    return null;
+  }
+
   public int getNumCards()
   {
     return cards.size();
@@ -139,7 +148,7 @@ public class Player
       return;
     }
     if (gold < card.getCost()){
-      System.out.println("U too poor");
+      System.out.println("You don't have enough gold.");
       return;
     }
     character.decNumBuild();
@@ -149,9 +158,30 @@ public class Player
     System.out.printf("Built %s\n", card.display());
   }
 
+  public void removePlacedCard(Card card)
+  {
+    if (placedCards.containsKey(card) == false) return;
+    int cnt = placedCards.get(card);
+    placedCards.remove(card);
+    if (--cnt > 0){
+      placedCards.put(card, cnt);
+    }
+  }
+
+  public void addDummyPlacedCard()
+  {
+    placedCards.put(new Card("dummy", "colorless", 0), 1);
+  }
+
   public HashMap<Card,Integer> getPlacedCards()
   {
     return placedCards;
+  }
+
+  public boolean isCityCompleted(App app)
+  {
+    int numDistrictGoal = app.getNumDistrictGoal();
+    return (placedCards.size() >= numDistrictGoal);
   }
 
   public int countPlacedCardColor(String color)
