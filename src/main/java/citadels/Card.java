@@ -56,6 +56,8 @@ public class Card
     return name+" ["+color+String.valueOf(cost)+"]";
   }
 
+  public String actionDesc() {return "";}
+
   public String disp()
   {
     return name+" "+color+String.valueOf(cost)+" "+description;

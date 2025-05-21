@@ -158,6 +158,13 @@ public class Player
     return cnt;
   }
 
+  public String getActionList()
+  {
+    String charAction = "character's action:\n" + character.actionDesc();
+    String cardAction = "special cards' action:\n";
+    return charAction+cardAction;
+  }
+
   public String disp()
   {
     return "player"+String.valueOf(id);

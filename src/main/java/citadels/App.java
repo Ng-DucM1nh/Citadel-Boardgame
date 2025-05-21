@@ -336,48 +336,44 @@ public class App {
     System.out.println("action : Gives info about your special action and how to perform it\nend : Ends your turn");
   }
 
-  public boolean prompt(boolean inTurn)
+  public void prompt(boolean inTurn)
   {
-    System.out.print(promptArrow);
-    String command = scanner.nextLine();
-    System.out.println("~~~"+command+"~~~");
-    String[] tokens = command.split(" ");
-    if (command.equals("t")){
-      return (inTurn ? false : true);
+    while (true){
+      System.out.print(promptArrow);
+      String command = scanner.nextLine();
+      System.out.println("~~~"+command+"~~~");
+      String[] tokens = command.split(" ");
+      if (command.equals("t")){
+        if (!inTurn) return;
+      }
+      if (command.equals("hand")){
+        handCommand();
+      }
+      if (tokens[0].equals("gold")){
+        goldCommand(tokens);
+      }
+      if (tokens[0].equals("build")){
+        if (inTurn) buildCommand(tokens);
+      }
+      if (command.equals("end")){
+        if (inTurn){
+          System.out.println("You ended your turn.");
+          return;
+        }
+      }
+      if (tokens[0].equals("citadel") || tokens[0].equals("list") || tokens[0].equals("city")){
+        citadelCommand(tokens);
+      }
+      if (command.equals("all")){
+        allCommand();
+      }
+      if (tokens[0].equals("info")){
+        infoCommand(tokens);
+      }
+      if (command.equals("help")){
+        helpCommand();
+      }
     }
-    if (command.equals("hand")){
-      handCommand();
-      return false;
-    }
-    if (tokens[0].equals("gold")){
-      goldCommand(tokens);
-      return false;
-    }
-    if (tokens[0].equals("build")){
-      if (inTurn) buildCommand(tokens);
-      return false;
-    }
-    if (command.equals("end")){
-      if (inTurn) System.out.println("You ended your turn.");
-      return (inTurn ? true : false);
-    }
-    if (tokens[0].equals("citadel") || tokens[0].equals("list") || tokens[0].equals("city")){
-      citadelCommand(tokens);
-      return false;
-    }
-    if (command.equals("all")){
-      allCommand();
-      return false;
-    }
-    if (tokens[0].equals("info")){
-      infoCommand(tokens);
-      return false;
-    }
-    if (command.equals("help")){
-      helpCommand();
-      return false;
-    }
-    return false;
   }
 
   public void characterSelection()
@@ -392,9 +388,7 @@ public class App {
     System.out.printf("Player %d is the crowned player and goes first.\n", players.get(0).getId());
     System.out.println("Press t to process turns");
     System.out.println("================================\nSELECTION PHASE\n================================");
-    while (true){
-      if (prompt(false)) break;
-    }
+    prompt(false);
     // shuffle character cards and remove some cards
     Collections.shuffle(characters, new Random(System.currentTimeMillis()));
     Character facedownChar = characters.get(0);
@@ -425,9 +419,7 @@ public class App {
     // Character facedownChar = null; ////////////////////////////////////////////////////
     for (Player player : players){
       characters = chooseCharacter(player, characters, facedownChar);
-      while (true){
-        if (prompt(false)) break;
-      }
+      prompt(false);
     }
     addCharacters();
     while (players.get(0).getId() != 1){
@@ -515,13 +507,13 @@ public class App {
       boolean inTurn = false;
       if (player == null){
         System.out.printf("No one is the %s\n", character.getName());
-        while (true) if (prompt(false)) break;
+        prompt(false);
         continue;
       }
       System.out.printf("Player %d is the %s\n", player.getId(), character.getName());
       if (player.isKilled()){
         System.out.printf("Player %d loses their turn because they were assassinated.\n", player.getId());
-        while (true) if (prompt(false)) break;
+        prompt(false);
         continue;
       }
       if (player.isRobbed()){
@@ -532,14 +524,14 @@ public class App {
         player.addGold(-gold);
       }
       if (player.getId() != 1){
-        while (true) if (prompt(false)) break;
+        prompt(false);
         continue;
       }
       System.out.println("Your turn.");
       character.promptSkill(this);
       character.passiveSkill(this, player);
       promptResource();
-      while (true) if (prompt(true)) break;
+      prompt(true);
     }
   }
 

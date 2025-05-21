@@ -32,4 +32,6 @@ public class Character
   }
 
   public void passiveSkill(App app, Player player){}
+
+  public String actionDesc() {return "";}
 }
