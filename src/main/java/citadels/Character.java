@@ -34,4 +34,6 @@ public class Character
   public void passiveSkill(App app, Player player){}
 
   public String actionDesc() {return "";}
+
+  public boolean action(App app, String[] tokens, Player player) {return false;}
 }

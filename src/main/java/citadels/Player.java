@@ -65,6 +65,11 @@ public class Player
     return cards;
   }
 
+  public void setCards(ArrayList<Card> cards)
+  {
+    this.cards = cards;
+  }
+
   public Card getCardAtPos(int pos)
   {
     if (pos < 0 || pos >= cards.size()) return null;
@@ -162,7 +167,13 @@ public class Player
   {
     String charAction = "character's action:\n" + character.actionDesc();
     String cardAction = "special cards' action:\n";
-    return charAction+cardAction;
+    return charAction+"\n"+cardAction;
+  }
+
+  public void action(App app, String[] tokens)
+  {
+    if (character.action(app, tokens, this)) return;
+    System.out.println("Invalid action.");
   }
 
   public String disp()

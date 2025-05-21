@@ -34,6 +34,11 @@ public class App {
     return deck;
   }
 
+  public ArrayList<Player> getPlayers()
+  {
+    return players;
+  }
+
   public void getCardsData() throws FileNotFoundException
   {
     cardsFile = new File("src/main/resources/citadels/cards.tsv");
@@ -118,10 +123,10 @@ public class App {
     }
     humanPlayer = players.get(0);
     // randomly pick a player to assign the crown to
-    Random rand = new Random(System.currentTimeMillis());
-    int crownPlayerId = rand.nextInt(numPlayers) + 1;
-    assignCrown(crownPlayerId);
-    // assignCrown(1); ///////////////////////////////////////////////////
+    // Random rand = new Random(System.currentTimeMillis());
+    // int crownPlayerId = rand.nextInt(numPlayers) + 1;
+    // assignCrown(crownPlayerId);
+    assignCrown(1); ///////////////////////////////////////////////////
     // shuffle deck
     System.out.println("Shuffling deck...");
     deck.shuffle();
@@ -336,6 +341,15 @@ public class App {
     System.out.println("action : Gives info about your special action and how to perform it\nend : Ends your turn");
   }
 
+  public void actionCommand(String[] tokens)
+  {
+    if (tokens.length == 1){
+      System.out.println(humanPlayer.getActionList());
+      return;
+    }
+    humanPlayer.action(this, tokens);
+  }
+
   public void prompt(boolean inTurn)
   {
     while (true){
@@ -373,6 +387,9 @@ public class App {
       if (command.equals("help")){
         helpCommand();
       }
+      if (tokens[0].equals("action")){
+        actionCommand(tokens);
+      }
     }
   }
 
@@ -390,33 +407,33 @@ public class App {
     System.out.println("================================\nSELECTION PHASE\n================================");
     prompt(false);
     // shuffle character cards and remove some cards
-    Collections.shuffle(characters, new Random(System.currentTimeMillis()));
-    Character facedownChar = characters.get(0);
-    characters.remove(0);
-    System.out.println("A mystery character was removed.");
-    int faceups = -1;
-    switch(players.size()){
-      case 4:
-        faceups = 2;
-        break;
-      case 5:
-        faceups = 1;
-        break;
-      case 6:
-        faceups = 0;
-        break;
-      case 7:
-        faceups = 0;
-        break;
-    }
-    for (int i=characters.size()-1; i>=0 && faceups > 0; i--){
-      Character c = characters.get(i);
-      if (c.getName() == "King") continue;
-      System.out.printf("%s was removed.\n", c.getName());
-      characters.remove(i);
-      faceups--;
-    }
-    // Character facedownChar = null; ////////////////////////////////////////////////////
+    // Collections.shuffle(characters, new Random(System.currentTimeMillis()));
+    // Character facedownChar = characters.get(0);
+    // characters.remove(0);
+    // System.out.println("A mystery character was removed.");
+    // int faceups = -1;
+    // switch(players.size()){
+    //   case 4:
+    //     faceups = 2;
+    //     break;
+    //   case 5:
+    //     faceups = 1;
+    //     break;
+    //   case 6:
+    //     faceups = 0;
+    //     break;
+    //   case 7:
+    //     faceups = 0;
+    //     break;
+    // }
+    // for (int i=characters.size()-1; i>=0 && faceups > 0; i--){
+    //   Character c = characters.get(i);
+    //   if (c.getName() == "King") continue;
+    //   System.out.printf("%s was removed.\n", c.getName());
+    //   characters.remove(i);
+    //   faceups--;
+    // }
+    Character facedownChar = null; ////////////////////////////////////////////////////
     for (Player player : players){
       characters = chooseCharacter(player, characters, facedownChar);
       prompt(false);
