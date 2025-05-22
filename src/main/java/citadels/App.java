@@ -71,6 +71,14 @@ public class App {
     if (crownPlayerId < 1 || crownPlayerId > players.size()){
       throw new RuntimeException("invalid crownPlayerId");
     }
+    for (Player p : players){
+      if (p.hasPlacedDistrict("Throne Room") == false) continue;
+      if (crown.getOwner().getId() != crownPlayerId){
+        p.addGold(1);
+        System.out.printf("Throne Room: Player %d receives 1 gold.\n", p.getId());
+      }
+      break;
+    }
     for (int i=0; i<players.size(); i++){
       Player p = players.get(i);
       if (p.getId() != crownPlayerId){
@@ -124,10 +132,10 @@ public class App {
     }
     humanPlayer = players.get(0);
     // randomly pick a player to assign the crown to
-    // Random rand = new Random(System.currentTimeMillis());
-    // int crownPlayerId = rand.nextInt(numPlayers) + 1;
-    // assignCrown(crownPlayerId);
-    assignCrown(1); ///////////////////////////////////////////////////
+    Random rand = new Random(System.currentTimeMillis());
+    int crownPlayerId = rand.nextInt(numPlayers) + 1;
+    assignCrown(crownPlayerId);
+    // assignCrown(1); ///////////////////////////////////////////////////
     // shuffle deck
     System.out.println("Shuffling deck...");
     deck.shuffle();
@@ -143,7 +151,7 @@ public class App {
       // }
       p.addGold(0);
     }
-    players.get(1).addPlacedCard(new Card("Keep", "", 0, 0, ""));
+    players.get(1).addPlacedCard(new Card("Throne Room", "", 0, 0, ""));
     players.get(1).addPlacedCard(new Card("dummy", "", 0, 0, ""));
     humanPlayer.addPlacedCard(new Card("Poor House", "purple", 0, 0, ""));
     humanPlayer.addPlacedCard(new Card("Park", "purple", 0, 0, ""));
