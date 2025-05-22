@@ -51,6 +51,10 @@ public class Warlord extends Character
     }
     targetId--;
     Player target = players.get(targetId);
+    if (target.getCharacter().getName().equals("Bishop") && !target.isKilled()){
+      System.out.printf("The Bishop's buildings cannot be destroyed by the Warlord, unless they are killed by the Assassin\n");
+      return true;
+    }
     if (target.isCityCompleted(app)){
       System.out.println("You can't destroy a district in a completed city.");
       return true;
