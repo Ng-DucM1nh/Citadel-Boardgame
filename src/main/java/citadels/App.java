@@ -145,6 +145,10 @@ public class App {
     }
     players.get(1).addPlacedCard(new Card("Keep", "", 0, 0, ""));
     players.get(1).addPlacedCard(new Card("dummy", "", 0, 0, ""));
+    humanPlayer.addPlacedCard(new Card("Imperial Treasury", "", 0, 0, ""));
+    for (int i=0; i<8; i++){
+      humanPlayer.addPlacedCard(new Card("dummy", "", 0, 0, ""));
+    }
     System.out.printf("Starting Citadel with %d players...\n", numPlayers);
     System.out.println("You are player 1");
   }
@@ -569,9 +573,6 @@ public class App {
     int winnerId = -1;
     for (Player p : players){
       p.scoreCalculation(this);
-      if (p.getId() == 2){
-        p.setScore(humanPlayer.getScore());
-      }
       if (maxScore < p.getScore()){
         maxScore = p.getScore();
         maxScoreCount = 1;

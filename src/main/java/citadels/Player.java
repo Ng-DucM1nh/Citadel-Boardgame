@@ -191,6 +191,14 @@ public class Player
     return placedCards;
   }
 
+  public boolean hasPlacedDistrict(String districtName)
+  {
+    for (Card c : placedCards.keySet()){
+      if (c.getName().equals(districtName)) return true;
+    }
+    return false;
+  }
+
   public boolean isCityCompleted(App app)
   {
     int numDistrictGoal = app.getNumDistrictGoal();
@@ -242,6 +250,10 @@ public class Player
         score += 2;
         System.out.printf("Scored 2 points for completing their city.\n");
       }
+    }
+    if (hasPlacedDistrict("Imperial Treasury")){
+      score += getGold();
+      System.out.printf("Imperial Treasury: scored %d points for having %d golds.\n", getGold(), getGold());
     }
     System.out.printf("Total score: %d.\n", score);
     this.score = score;
