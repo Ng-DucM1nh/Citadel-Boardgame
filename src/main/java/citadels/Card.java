@@ -108,6 +108,10 @@ public class Card
       actionLaboratory(app, tokens, player);
       return true;
     }
+    if (tokens[1].equals("Smithy")){
+      actionSmithy(app, tokens, player);
+      return true;
+    }
     return false;
   }
 
@@ -141,6 +145,25 @@ public class Card
     player.addGold(1);
     setUsed(true);
     System.out.printf("Player %d discard card %s for 1 gold\n", player.getId(), card.display());
+  }
+
+  public void actionSmithy(App app, String[] tokens, Player player)
+  {
+    if (tokens.length != 2){
+      System.out.println("Invalid arguments");
+      return;
+    }
+    if (player.getGold() < 2){
+      System.out.println("You don't have enough gold");
+      return;
+    }
+    Deck deck = app.getDeck();
+    if (deck.size() == 0){
+      System.out.println("deck empty");
+      return;
+    }
+    player.addGold(-2);
+    app.drawPick(3, 3, player);
   }
 
   public void destroy(App app)

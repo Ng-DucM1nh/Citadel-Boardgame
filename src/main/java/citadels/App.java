@@ -57,7 +57,7 @@ public class App {
     Scanner scanner = new Scanner(cardsFile); // this can possibly throw FileNotFoundException
     deck = new Deck();
     scanner.nextLine();
-    for (int i=0; i<6; i++){
+    while (scanner.hasNextLine()){
       String s = scanner.nextLine();
       String[] tokens = s.split("\t");
       String name = tokens[0];
@@ -521,6 +521,7 @@ public class App {
       System.out.println("deck empty");
       return false;
     }
+    System.out.printf("%d remaining cards in deck\n", deck.size());
     numDraw = Math.min(numDraw, deck.size());
     numPick = Math.min(numPick, numDraw);
     ArrayList<Card> choices = new ArrayList<>();
@@ -533,42 +534,50 @@ public class App {
       System.out.printf("%d. %s [%s], cost: %d\n", i+1, card.getName(), card.getColor(), card.getCost());
     }
     ArrayList<Integer> pos = new ArrayList<>();
-    while (true){
-      pos.clear();
-      System.out.print(promptArrow);
-      String cmd = scanner.nextLine();
-      String[] tokens = cmd.split(" ");
-      if (tokens.length != 3 || tokens[0].equals("collect") == false || tokens[1].equals("card") == false){
-        System.out.println("Invalid choice");
-        continue;
-      }
-      String[] spos = tokens[2].split(",");
-      if (spos.length != numPick){
-        System.out.println("Invalid choice");
-        continue;
-      }
-      boolean valid = true;
+    if (numPick == numDraw){
       for (int i=0; i<numPick; i++){
-        int npos = -1;
-        try{
-          npos = Integer.parseInt(spos[i]);
-        }
-        catch (Exception e){
-          System.out.println("Invalid card position");
-          valid = false;
-          break;
-        }
-        if (npos < 1 || npos > numDraw){
-          System.out.println("Invalid card position");
-          valid = false;
-          break;
-        }
-        npos--;
-        pos.add(npos);
+        pos.add(i);
       }
-      if (!valid) continue;
-      break;
     }
+    else{
+      while (true){
+        pos.clear();
+        System.out.print(promptArrow);
+        String cmd = scanner.nextLine();
+        String[] tokens = cmd.split(" ");
+        if (tokens.length != 3 || tokens[0].equals("collect") == false || tokens[1].equals("card") == false){
+          System.out.println("Invalid choice");
+          continue;
+        }
+        String[] spos = tokens[2].split(",");
+        if (spos.length != numPick){
+          System.out.println("Invalid choice");
+          continue;
+        }
+        boolean valid = true;
+        for (int i=0; i<numPick; i++){
+          int npos = -1;
+          try{
+            npos = Integer.parseInt(spos[i]);
+          }
+          catch (Exception e){
+            System.out.println("Invalid card position");
+            valid = false;
+            break;
+          }
+          if (npos < 1 || npos > numDraw){
+            System.out.println("Invalid card position");
+            valid = false;
+            break;
+          }
+          npos--;
+          pos.add(npos);
+        }
+        if (!valid) continue;
+        break;
+      }
+    }
+
     ArrayList<Card> picked = new ArrayList<>();
     Collections.sort(pos);
     for (int i=numPick-1; i>=0; i--){
