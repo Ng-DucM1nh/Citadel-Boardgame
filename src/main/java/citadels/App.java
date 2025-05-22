@@ -159,10 +159,10 @@ public class App {
     }
     players.get(1).addPlacedCard(new Card("Great Wall", "", 0, 0, ""));
     players.get(2).addPlacedCard(new Card("Bell Tower", "purple", 1, 1, ""));
-    humanPlayer.addPlacedCard(new Card("Armory", "purple", 0, 0, ""));
+    humanPlayer.addPlacedCard(new Card("Museum", "purple", 0, 0, ""));
     Card dummy = new Card("dummy", "purple", 0, 0, "");
-    for (int i=0; i<3; i++){
-      humanPlayer.takeCard(dummy);
+    for (int i=0; i<8; i++){
+      humanPlayer.addPlacedCard(new Card("dummy", "purple", 0, 0, ""));
     }
     System.out.printf("Starting Citadel with %d players...\n", numPlayers);
     System.out.println("You are player 1");

@@ -88,6 +88,12 @@ public class Player
     return cards.get(pos);
   }
 
+  public void removeCardAtPos(int pos)
+  {
+    if (pos < 0 || pos >= cards.size()) return;
+    cards.remove(pos);
+  }
+
   public Character getCharacter()
   {
     return character;
@@ -236,10 +242,11 @@ public class Player
     deck.shuffle();
   }
 
-  public void removePlacedCard(Card card)
+  public void removePlacedCard(App app, Card card)
   {
     if (placedCards.containsKey(card) == false) return;
     int cnt = placedCards.get(card);
+    card.freeMuseum(app);
     placedCards.remove(card);
     if (--cnt > 0){
       placedCards.put(card, cnt);
@@ -387,6 +394,12 @@ public class Player
       int add = (colorCount.containsKey("purple") ? colorCount.get("purple")-1 : 0);
       score += add;
       System.out.printf("Wishing Well: scored %d points for each other purple cards.\n", add);
+    }
+    if (hasPlacedDistrict("Museum")){
+      Card card = findPlacedCardByName("Museum");
+      int add = card.getMuseumSize();
+      score += add;
+      System.out.printf("Museum: scored %d points for each card under Museum\n", add);
     }
     System.out.printf("Total score: %d.\n", score);
     this.score = score;

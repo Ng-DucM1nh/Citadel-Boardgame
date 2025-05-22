@@ -13,6 +13,7 @@ public class Card
   private String description;
   private int roundBuilt;
   private boolean used;
+  ArrayList<Card> museum;
 
   public Card(String name, String color, int cost, int point, String description)
   {
@@ -24,6 +25,7 @@ public class Card
     this.description = description;
     this.roundBuilt = -1;
     used = false;
+    museum = new ArrayList<>();
 
     if (name.equals("Dragon Gate") || name.equals("University")){
       this.point = 8;
@@ -80,9 +82,30 @@ public class Card
     this.used = used;
   }
 
+  public int getMuseumSize()
+  {
+    return museum.size();
+  }
+
+  public void freeMuseum(App app)
+  {
+    Deck deck = app.getDeck();
+    for (Card c : museum){
+      deck.addCard(c);
+    }
+  }
+
   public String display()
   {
-    return name+" ["+color+String.valueOf(cost)+"]";
+    String inf = name+" ["+color+String.valueOf(cost)+"]";
+    if (name.equals("Museum")){
+      inf += " {";
+      for (Card c : museum){
+        inf += c.display() + " ";
+      }
+      inf += "}";
+    }
+    return inf;
   }
 
   public String actionDesc()
@@ -97,7 +120,7 @@ public class Card
       return "action Armory <playerId> <District_Name_Seperated_By_Underscore>";
     }
     if (name.equals("Museum")){
-      return "On your turn, you may place on district card from your hand face down under the Museum.  At the end of the game, you score one extra point for every card under the Museum";
+      return "action Museum <pos>";
     }
     return "";
   }
@@ -114,6 +137,10 @@ public class Card
     }
     if (tokens[1].equals(name) && name.equals("Armory")){
       actionArmory(app, tokens, player);
+      return true;
+    }
+    if (tokens[1].equals(name) && name.equals("Museum")){
+      actionMuseum(app, tokens, player);
       return true;
     }
     return false;
@@ -207,9 +234,39 @@ public class Card
       return;
     }
     Card targetCard = target.findPlacedCardByName(districtName);
-    player.removePlacedCard(this);
-    target.removePlacedCard(targetCard);
+    player.removePlacedCard(app, this);
+    target.removePlacedCard(app, targetCard);
     System.out.printf("Player %d destroy their Armory to destroy player %d's %s\n", player.getId(), target.getId(), targetCard.display());
+  }
+
+  public void actionMuseum(App app, String[] tokens, Player player)
+  {
+    if (tokens.length != 3){
+      System.out.println("Invalid arguments");
+      return;
+    }
+    if (used){
+      System.out.println("You can only use this card's ability once per turn");
+      return;
+    }
+    int pos = -1;
+    try{
+      pos = Integer.parseInt(tokens[2]);
+    }
+    catch (Exception e){
+      System.out.println("Invalid card position");
+      return;
+    }
+    if (pos < 1 || pos > player.getNumCards()){
+      System.out.println("Invalid card position");
+      return;
+    }
+    pos--;
+    Card card = player.getCardAtPos(pos);
+    museum.add(card);
+    player.removeCardAtPos(pos);
+    setUsed(true);
+    System.out.printf("Player %d puts card %s under their Museum\n", player.getId(), card.display());
   }
 
   public void destroy(App app)
