@@ -159,7 +159,20 @@ public class Player
       return;
     }
     Card card = cards.get(pos);
-    if (placedCards.containsKey(card)){
+    if (hasPlacedDistrict("Quarry")){
+      boolean duplicate = false;
+      for (Card c : placedCards.keySet()){
+        duplicate |= (placedCards.get(c) > 1);
+      }
+      if (duplicate == true){
+        System.out.printf("This district is already built and player %d already have one duplicate district\n", id);
+        return;
+      }
+      else if (placedCards.containsKey(card)){
+        System.out.printf("Quarry: player %d may have one duplicate district\n", id);
+      }
+    }
+    else if (placedCards.containsKey(card)){
       System.out.println("This building is already built");
       return;
     }
@@ -174,7 +187,12 @@ public class Player
     }
     character.decNumBuild();
     gold -= cost;
-    placedCards.put(card, 1);
+    if (placedCards.containsKey(card) == false){
+      placedCards.put(card, 1);
+    }
+    else{
+      placedCards.put(card, placedCards.get(card)+1);
+    }
     cards.remove(pos);
     card.setRoundBuilt(app.getRound());
     System.out.printf("Built %s\n", card.display());
