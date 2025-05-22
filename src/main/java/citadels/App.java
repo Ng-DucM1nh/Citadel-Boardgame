@@ -141,11 +141,11 @@ public class App {
         Card c = deck.pop();
         p.takeCard(c);
       }
-      p.addGold(100);
+      p.addGold(0);
     }
     players.get(1).addPlacedCard(new Card("Keep", "", 0, 0, ""));
     players.get(1).addPlacedCard(new Card("dummy", "", 0, 0, ""));
-    humanPlayer.addPlacedCard(new Card("Map Room", "purple", 0, 0, ""));
+    humanPlayer.addPlacedCard(new Card("Poor House", "purple", 0, 0, ""));
     humanPlayer.addPlacedCard(new Card("Wishing Well", "purple", 0, 0, ""));
     for (int i=0; i<8; i++){
       humanPlayer.addPlacedCard(new Card("dummy", "", 0, 0, ""));
@@ -564,6 +564,10 @@ public class App {
       prompt(true);
       if (player.isCityCompleted(this)){
         firstCompletePlayerId = player.getId();
+      }
+      if (player.hasPlacedDistrict("Poor House")){
+        player.addGold(1);
+        System.out.printf("Player %d received 1 gold from Poor House.\n", player.getId());
       }
     }
   }
