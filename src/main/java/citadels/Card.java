@@ -94,7 +94,7 @@ public class Card
       return "action Smithy";
     }
     if (name.equals("Armory")){
-      return "During your turn, you may destroy the Armory in order to destory any other district card of your choice in another player's city";
+      return "action Armory <playerId> <District_Name_Seperated_By_Underscore>";
     }
     if (name.equals("Museum")){
       return "On your turn, you may place on district card from your hand face down under the Museum.  At the end of the game, you score one extra point for every card under the Museum";
@@ -110,6 +110,10 @@ public class Card
     }
     if (tokens[1].equals(name) && name.equals("Smithy")){
       actionSmithy(app, tokens, player);
+      return true;
+    }
+    if (tokens[1].equals(name) && name.equals("Armory")){
+      actionArmory(app, tokens, player);
       return true;
     }
     return false;
@@ -169,6 +173,43 @@ public class Card
     player.addGold(-2);
     app.drawPick(3, 3, player);
     setUsed(true);
+  }
+
+  public void actionArmory(App app, String[] tokens, Player player)
+  {
+    if (tokens.length != 4){
+      System.out.println("Invalid arguments");
+      return;
+    }
+    ArrayList<Player> players = app.getPlayers();
+    int playerId = -1;
+    try{
+      playerId = Integer.parseInt(tokens[2]);
+    }
+    catch (Exception e){
+      System.out.println("Invalid player id");
+      return;
+    }
+    if (playerId < 1 || playerId > players.size()){
+      System.out.println("Invalid player id");
+      return;
+    }
+    playerId--;
+    String districtName = "";
+    String[] districtNameTokens = tokens[3].split("_");
+    for (int i=0; i<districtNameTokens.length; i++){
+      districtName += districtNameTokens[i];
+      if (i < districtNameTokens.length-1) districtName += " ";
+    }
+    Player target = players.get(playerId);
+    if (!target.hasPlacedDistrict(districtName)){
+      System.out.println("Invalid district name");
+      return;
+    }
+    Card targetCard = target.findPlacedCardByName(districtName);
+    player.removePlacedCard(this);
+    target.removePlacedCard(targetCard);
+    System.out.printf("Player %d destroy their Armory to destroy player %d's %s\n", player.getId(), target.getId(), targetCard.display());
   }
 
   public void destroy(App app)
