@@ -352,7 +352,7 @@ public class Player
     HashMap<String,Integer> colorCount = new HashMap<>();
     for (Card c : placedCards.keySet()){
       score += c.getPoint();
-      System.out.printf("Scored %d points with %s district card.\n", c.getPoint(), c.getName());
+      System.out.printf("Scored %d points with %s district card.\n", c.getPoint(), c.display());
       String col = c.getColor();
       if (colorCount.containsKey(col) == false){
         colorCount.put(col, 1);

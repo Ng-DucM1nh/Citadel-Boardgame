@@ -156,8 +156,10 @@ public class App {
         p.takeCard(c);
       }
       p.addGold(2);
+      for (int i=0; i<3; i++){
+        p.addPlacedCard(deck.pop());
+      }
     }
-    humanPlayer.takeCard(new Card("Lighthouse", "purple", 0, 0, ""));
     System.out.printf("Starting Citadel with %d players...\n", numPlayers);
     System.out.println("You are player 1");
   }
@@ -490,7 +492,7 @@ public class App {
     int numDraw = 2, numPick = 1;
     if (player.hasPlacedDistrict("Observatory")){
       numDraw = 3;
-      System.out.printf("Observatory: Player %d may draw %d cards.\n", player.getId(), 3);
+      System.out.printf("Observatory: Player %d may draw %d cards and keep 1.\n", player.getId(), 3);
     }
     if (player.hasPlacedDistrict("Library")){
       numPick = numDraw;
@@ -685,17 +687,17 @@ public class App {
       if (!player.isKilled()) character.passiveSkill(this, player);
       promptResource(player);
       prompt(myTurn);
-      // if (player.isCityCompleted(this)){
-      //   firstCompletePlayerId = player.getId();
-      // }
-      // if (player.hasPlacedDistrict("Poor House") && player.getGold() == 0){
-      //   player.addGold(1);
-      //   System.out.printf("Poor House: Player %d received 1 gold.\n", player.getId());
-      // }
-      // if (player.hasPlacedDistrict("Park") && player.getNumCards() == 0){
-      //   System.out.printf("Park: Player %d may draw 2 cards.\n", player.getId());
-      //   drawPick(2, 2, player);
-      // }
+      if (player.isCityCompleted(this)){
+        if (firstCompletePlayerId != -1) firstCompletePlayerId = player.getId();
+      }
+      if (player.hasPlacedDistrict("Poor House") && player.getGold() == 0){
+        player.addGold(1);
+        System.out.printf("Poor House: Player %d received 1 gold.\n", player.getId());
+      }
+      if (player.hasPlacedDistrict("Park") && player.getNumCards() == 0){
+        System.out.printf("Park: Player %d may draw 2 cards.\n", player.getId());
+        drawPick(2, 2, player);
+      }
       player.resetCard();
       player.resetPlayer();
     }
