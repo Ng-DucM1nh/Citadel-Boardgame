@@ -65,6 +65,7 @@ public class App {
         deck.addCard(c);
       }
     }
+    deck.betterDisp();
   }
 
   public void assignCrown(int crownPlayerId)

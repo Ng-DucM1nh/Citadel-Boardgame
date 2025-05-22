@@ -31,14 +31,22 @@ public class Deck
     return card;
   }
 
+  public int size()
+  {
+    return cards.size();
+  }
+
   public void disp()
   {
     for (Card c : cards){
       System.out.println(c.display());
     }
   }
-  public int size()
+
+  public void betterDisp()
   {
-    return cards.size();
+    for (Card c : cards){
+      System.out.println(c.disp());
+    }
   }
 }

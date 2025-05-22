@@ -17,6 +17,10 @@ public class Card
     this.destroyCost = cost-1;
     this.point = point;
     this.description = description;
+
+    if (name.equals("Dragon Gate") || name.equals("University")){
+      this.point = 8;
+    }
   }
 
   public String getName()
@@ -58,6 +62,6 @@ public class Card
 
   public String disp()
   {
-    return name+" "+color+String.valueOf(cost)+" "+description;
+    return name+" "+color+" "+String.valueOf(cost)+" "+String.valueOf(point);
   }
 }
