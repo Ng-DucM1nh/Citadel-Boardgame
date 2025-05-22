@@ -20,6 +20,7 @@ public class App {
   private Player humanPlayer;
   private int firstCompletePlayerId = -1;
   private int round;
+  private boolean debugMode = false;
 
   public Scanner getScanner()
   {
@@ -49,6 +50,11 @@ public class App {
   public int getRound()
   {
     return round;
+  }
+
+  public void toggleDebug()
+  {
+    debugMode = !debugMode;
   }
 
   public void getCardsData() throws FileNotFoundException
@@ -421,6 +427,10 @@ public class App {
       if (tokens[0].equals("action")){
         actionCommand(tokens);
       }
+      if (command.equals("debug")){
+        System.out.printf("Debug mode toggled\n");
+        toggleDebug();
+      }
     }
   }
 
@@ -659,10 +669,6 @@ public class App {
         robber.addGold(gold);
         player.addGold(-gold);
       }
-      // if (player.getId() != 1){
-      //   prompt(false);
-      //   continue;
-      // }
       boolean myTurn = (player.getId() == 1);
       if (myTurn) System.out.println("Your turn.");
       if (player.hasPlacedDistrict("School Of Magic")){
@@ -685,6 +691,13 @@ public class App {
       }
       if (!player.isKilled()) character.promptSkill(this, player);
       if (!player.isKilled()) character.passiveSkill(this, player);
+      if (!myTurn && debugMode){
+        System.out.printf("Debug: Player %d's hand: ", player.getId());
+        for (int j=0; j<player.getNumCards(); j++){
+          System.out.printf("%s ", player.getCardAtPos(j).display());
+        }
+        System.out.println();
+      }
       promptResource(player);
       prompt(myTurn);
       if (player.isCityCompleted(this)){
