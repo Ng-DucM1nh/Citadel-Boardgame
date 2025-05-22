@@ -233,6 +233,28 @@ public class Player
     System.out.println("Invalid action.");
   }
 
+  public boolean promptGraveyard(App app, Card destroyedCard)
+  {
+    if (getGold() < 1) return false;
+    if (id != 1) return false;
+    Scanner scanner = app.getScanner();
+    System.out.printf("Player %d may pay 1 gold to take the card [y/n]: %s.\n", id, destroyedCard.display());
+    String res = "";
+    while (true){
+      res = scanner.nextLine();
+      if (res.equals("y") == false && res.equals("n") == false){
+        System.out.println("Invalid choice");
+        continue;
+      }
+      break;
+    }
+    if (res.equals("y")){
+      takeCard(destroyedCard);
+      return true;
+    }
+    return false;
+  }
+
   public void scoreCalculation(App app)
   {
     System.out.printf("Player %d's score :\n", id);
