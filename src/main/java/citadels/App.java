@@ -147,9 +147,6 @@ public class App {
     players.get(1).addPlacedCard(new Card("dummy", "", 0, 0, ""));
     humanPlayer.addPlacedCard(new Card("Poor House", "purple", 0, 0, ""));
     humanPlayer.addPlacedCard(new Card("Wishing Well", "purple", 0, 0, ""));
-    for (int i=0; i<8; i++){
-      humanPlayer.addPlacedCard(new Card("dummy", "", 0, 0, ""));
-    }
     System.out.printf("Starting Citadel with %d players...\n", numPlayers);
     System.out.println("You are player 1");
   }
@@ -467,7 +464,7 @@ public class App {
     return null;
   }
 
-  public void promptResource()
+  public void promptResource(Player player)
   {
     String res = "";
     while (true){
@@ -477,48 +474,92 @@ public class App {
         System.out.println("Invalid choice");
         continue;
       }
-      break;
-    }
-    if (res.equals("gold")){
-      System.out.println("Player 1 received 2 gold.");
-      humanPlayer.addGold(2);
+      if (res.equals("gold")){
+        System.out.println("Player 1 received 2 gold.");
+        player.addGold(2);
+        return;
+      }
+      ArrayList<Card> picked = drawPick(2, 1);
+      if (picked == null){
+        System.out.println("deck empty");
+        continue;
+      }
+      for (Card c : picked){
+        player.takeCard(c);
+      }
       return;
     }
+  }
+
+  public ArrayList<Card> drawPick(int numDraw, int numPick)
+  {
+    if (deck.size() == 0){
+      return null;
+    }
+    numDraw = Math.min(numDraw, deck.size());
+    numPick = Math.min(numPick, numDraw);
     ArrayList<Card> choices = new ArrayList<>();
-    choices.add(deck.pop()); choices.add(deck.pop());
-    int pos = -1;
+    for (int i=0; i<numDraw; i++){
+      choices.add(deck.pop());
+    }
+    System.out.printf("Pick %d out of the following cards: 'collect card <pos1,pos2,...>'\n", numPick);
+    for (int i=0; i<choices.size(); i++){
+      Card card = choices.get(i);
+      System.out.printf("%d. %s [%s], cost: %d\n", i+1, card.getName(), card.getColor(), card.getCost());
+    }
+    ArrayList<Integer> pos = new ArrayList<>();
     while (true){
-      System.out.print("Pick one of the following cards: 'collect card <option>'.\n");
-      for (int i=0; i<2; i++){
-        Card card = choices.get(i);
-        System.out.printf("%d. %s [%s], cost: %d\n", i+1, card.getName(), card.getColor(), card.getCost());
-      }
+      pos.clear();
       System.out.print(promptArrow);
-      res = scanner.nextLine();
-      String[] tokens = res.split(" ");
-      if (tokens.length != 3 || !tokens[0].equals("collect") || !tokens[1].equals("card")){
-        System.out.println("Invalid choice.");
+      String cmd = scanner.nextLine();
+      String[] tokens = cmd.split(" ");
+      if (tokens.length != 3 || tokens[0].equals("collect") == false || tokens[1].equals("card") == false){
+        System.out.println("Invalid choice");
         continue;
       }
-      try{
-        pos = Integer.parseInt(tokens[2]);
-      }
-      catch (Exception e){
-        System.out.println("Invalid choice.");
+      String[] spos = tokens[2].split(",");
+      if (spos.length != numPick){
+        System.out.println("Invalid choice");
         continue;
       }
-      if (pos < 1 || pos > 2){
-        System.out.println("Invalid choice.");
-        continue;
+      boolean valid = true;
+      for (int i=0; i<numPick; i++){
+        int npos = -1;
+        try{
+          npos = Integer.parseInt(spos[i]);
+        }
+        catch (Exception e){
+          System.out.println("Invalid card position");
+          valid = false;
+          break;
+        }
+        if (npos < 1 || npos > numDraw){
+          System.out.println("Invalid card position");
+          valid = false;
+          break;
+        }
+        npos--;
+        pos.add(npos);
       }
+      if (!valid) continue;
       break;
     }
-    pos--;
-    System.out.printf("You chose card %s\n", choices.get(pos).display());
-    humanPlayer.takeCard(choices.get(pos));
-    choices.remove(pos);
-    deck.addCard(choices.get(0));
-    return;
+    ArrayList<Card> picked = new ArrayList<>();
+    Collections.sort(pos);
+    for (int i=numPick-1; i>=0; i--){
+      int p = pos.get(i);
+      picked.add(choices.get(p));
+      choices.remove(p);
+    }
+    System.out.printf("You chose cards:\n");
+    for (Card c : picked){
+      System.out.println(c.display());
+    }
+    while (choices.size() > 0){
+      deck.addCard(choices.get(0));
+      choices.remove(0);
+    }
+    return picked;
   }
 
   public void turn()
@@ -560,7 +601,7 @@ public class App {
       System.out.println("Your turn.");
       character.promptSkill(this);
       character.passiveSkill(this, player);
-      promptResource();
+      promptResource(player);
       prompt(true);
       if (player.isCityCompleted(this)){
         firstCompletePlayerId = player.getId();
@@ -612,7 +653,6 @@ public class App {
       return;
     }
     initialSetup();
-
     while(true){
       characterSelection();
       turn();
