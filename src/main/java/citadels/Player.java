@@ -144,7 +144,7 @@ public class Player
     this.score = score;
   }
 
-  public void build(int pos)
+  public void build(int pos, int round)
   {
     System.out.printf("**build called with pos = %d**\n", pos);
     if (pos < 0 || pos >= cards.size()){
@@ -173,6 +173,7 @@ public class Player
     gold -= cost;
     placedCards.put(card, 1);
     cards.remove(pos);
+    card.setRoundBuilt(round);
     System.out.printf("Built %s\n", card.display());
   }
 
@@ -247,6 +248,22 @@ public class Player
       else{
         colorCount.put(col, colorCount.get(col)+1);
       }
+    }
+    if (hasPlacedDistrict("Haunted City") && findPlacedCardByName("Haunted City").getRoundBuilt() != app.getRound()){
+      Card card = findPlacedCardByName("Haunted City");
+      String targetCol = "purple";
+      if (colorCount.get("purple") >= 2 && colorCount.size() == 4){
+        String[] colors = {"red", "blue", "green", "yellow"};
+        for (String c : colors){
+          if (colorCount.containsKey(c)) continue;
+          targetCol = c;
+          colorCount.put("purple", colorCount.get("purple")-1);
+          colorCount.put(targetCol, 1);
+          break;
+        }
+      }
+      card.setColor(targetCol);
+      System.out.printf("For the purposes of victory points, the Haunted City's color is considered to be %s.\n", targetCol);
     }
     if (colorCount.size() == 5){
       score += 3;

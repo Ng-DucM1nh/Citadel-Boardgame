@@ -8,6 +8,7 @@ public class Card
   private int destroyCost;
   private int point;
   private String description;
+  private int roundBuilt;
 
   public Card(String name, String color, int cost, int point, String description)
   {
@@ -17,6 +18,7 @@ public class Card
     this.destroyCost = cost-1;
     this.point = point;
     this.description = description;
+    this.roundBuilt = -1;
 
     if (name.equals("Dragon Gate") || name.equals("University")){
       this.point = 8;
@@ -31,6 +33,11 @@ public class Card
   public String getColor()
   {
     return color;
+  }
+
+  public void setColor(String color)
+  {
+    this.color = color;
   }
 
   public int getCost()
@@ -51,6 +58,16 @@ public class Card
   public String getDesc()
   {
     return description;
+  }
+
+  public int getRoundBuilt()
+  {
+    return roundBuilt;
+  }
+
+  public void setRoundBuilt(int round)
+  {
+    roundBuilt = round;
   }
 
   public String display()

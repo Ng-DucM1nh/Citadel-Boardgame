@@ -19,6 +19,7 @@ public class App {
   private Scanner scanner;
   private Player humanPlayer;
   private int firstCompletePlayerId = -1;
+  private int round;
 
   public Scanner getScanner()
   {
@@ -43,6 +44,11 @@ public class App {
   public int getFirstCompletePlayerId()
   {
     return firstCompletePlayerId;
+  }
+
+  public int getRound()
+  {
+    return round;
   }
 
   public void getCardsData() throws FileNotFoundException
@@ -153,8 +159,14 @@ public class App {
     }
     players.get(1).addPlacedCard(new Card("Great Wall", "", 0, 0, ""));
     players.get(1).addPlacedCard(new Card("dummy", "", 1, 1, ""));
-    humanPlayer.addPlacedCard(new Card("Factory", "purple", 0, 0, ""));
-    humanPlayer.addPlacedCard(new Card("Park", "purple", 0, 0, ""));
+    humanPlayer.takeCard(new Card("Haunted City", "purple", 0, 0, ""));
+    // humanPlayer.addPlacedCard(new Card("red", "red", 0, 0, ""));
+    humanPlayer.addPlacedCard(new Card("blue", "blue", 0, 0, ""));
+    humanPlayer.addPlacedCard(new Card("green", "green", 0, 0, ""));
+    humanPlayer.addPlacedCard(new Card("yellow", "yellow", 0, 0, ""));
+    for (int i=0; i<8; i++){
+      humanPlayer.addPlacedCard(new Card("dummy", "purple", 0, 0, ""));
+    }
     System.out.printf("Starting Citadel with %d players...\n", numPlayers);
     System.out.println("You are player 1");
   }
@@ -269,7 +281,7 @@ public class App {
       System.out.println("Invalid card position");
       return;
     }
-    humanPlayer.build(pos-1);
+    humanPlayer.build(pos-1, round);
   }
 
   public void citadelCommand(String[] tokens)
@@ -650,6 +662,7 @@ public class App {
 	public App()
   {
     scanner = new Scanner(System.in);
+    round = 0;
     try{
       getCardsData();
     }
@@ -660,6 +673,7 @@ public class App {
     }
     initialSetup();
     while(true){
+      round++;
       characterSelection();
       turn();
       if (isGameOver()) break;
