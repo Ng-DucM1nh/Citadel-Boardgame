@@ -181,9 +181,9 @@ public class Player
     }
   }
 
-  public void addDummyPlacedCard()
+  public void addPlacedCard(Card card)
   {
-    placedCards.put(new Card("dummy", "colorless", 0, 0, ""), 1);
+    placedCards.put(card, 1);
   }
 
   public HashMap<Card,Integer> getPlacedCards()

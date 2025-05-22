@@ -51,7 +51,6 @@ public class App {
     Scanner scanner = new Scanner(cardsFile); // this can possibly throw FileNotFoundException
     deck = new Deck();
     scanner.nextLine();
-    // read and create normal district cards (there are 17 types) from file
     while (scanner.hasNextLine()){
       String s = scanner.nextLine();
       String[] tokens = s.split("\t");
@@ -65,7 +64,6 @@ public class App {
         deck.addCard(c);
       }
     }
-    deck.betterDisp();
   }
 
   public void assignCrown(int crownPlayerId)
@@ -145,9 +143,8 @@ public class App {
       }
       p.addGold(100);
     }
-    for (int i=0; i<7; i++){
-      players.get(1).addDummyPlacedCard();
-    }
+    players.get(1).addPlacedCard(new Card("Keep", "", 0, 0, ""));
+    players.get(1).addPlacedCard(new Card("dummy", "", 0, 0, ""));
     System.out.printf("Starting Citadel with %d players...\n", numPlayers);
     System.out.println("You are player 1");
   }

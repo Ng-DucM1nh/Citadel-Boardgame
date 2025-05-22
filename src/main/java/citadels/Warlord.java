@@ -49,13 +49,16 @@ public class Warlord extends Character
     targetId--;
     Player target = players.get(targetId);
     if (target.isCityCompleted(app)){
-      //////////// not tested yet
       System.out.println("You can't destroy a district in a completed city.");
       return true;
     }
     Card targetCard = target.findPlacedCardByName(districtName);
     if (targetCard == null){
       System.out.println("Invalid card");
+      return true;
+    }
+    if (targetCard.getName().equals("Keep")){
+      System.out.printf("The Keep cannot be destroyed by the Warlord.\n");
       return true;
     }
     int cost = targetCard.getDestroyCost();
