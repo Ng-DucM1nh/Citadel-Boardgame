@@ -255,6 +255,10 @@ public class Player
       score += getGold();
       System.out.printf("Imperial Treasury: scored %d points for having %d golds.\n", getGold(), getGold());
     }
+    if (hasPlacedDistrict("Map Room")){
+      score += getNumCards();
+      System.out.printf("Map Room: scored %d points for having %d cards.\n", getNumCards(), getNumCards());
+    }
     System.out.printf("Total score: %d.\n", score);
     this.score = score;
   }
