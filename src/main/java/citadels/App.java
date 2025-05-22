@@ -52,20 +52,16 @@ public class App {
     deck = new Deck();
     scanner.nextLine();
     // read and create normal district cards (there are 17 types) from file
-    for (int i=0; i<17; i++){
+    while (scanner.hasNextLine()){
       String s = scanner.nextLine();
-      String[] tokens = s.split("[\\s]");
-      int len = tokens.length;
-      int cost = Integer.parseInt(tokens[len-1]);
-      String color = tokens[len-2];
-      int qty = Integer.parseInt(tokens[len-3]);
-      String name = "";
-      for (int j=0; j<len-3; j++){
-        name += tokens[j];
-        if (j < len-4) name += " ";
-      }
-      Card c = new Card(name, color, cost);
-      for (int j=0; j<qty; j++){
+      String[] tokens = s.split("\t");
+      String name = tokens[0];
+      int qty = Integer.parseInt(tokens[1]);
+      String color= tokens[2];
+      int cost = Integer.parseInt(tokens[3]);
+      String desc = (tokens.length == 4 ? "A normal card with no ability" : tokens[4]);
+      Card c = new Card(name, color, cost, cost, desc);
+      while (qty-- > 0){
         deck.addCard(c);
       }
     }
