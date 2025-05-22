@@ -18,6 +18,7 @@ public class App {
   private ArrayList<Character> characters;
   private Scanner scanner;
   private Player humanPlayer;
+  private int firstCompletePlayerId = -1;
 
   public Scanner getScanner()
   {
@@ -37,6 +38,11 @@ public class App {
   public ArrayList<Player> getPlayers()
   {
     return players;
+  }
+
+  public int getFirstCompletePlayerId()
+  {
+    return firstCompletePlayerId;
   }
 
   public void getCardsData() throws FileNotFoundException
@@ -557,7 +563,41 @@ public class App {
       character.passiveSkill(this, player);
       promptResource();
       prompt(true);
+      if (player.isCityCompleted(this)){
+        firstCompletePlayerId = player.getId();
+      }
     }
+  }
+
+  public void endGame()
+  {
+    int maxScore = -1, maxScoreCount = 0;
+    int winnerId = -1;
+    for (Player p : players){
+      p.scoreCalculation(this);
+      if (p.getId() == 2){
+        p.setScore(humanPlayer.getScore());
+      }
+      if (maxScore < p.getScore()){
+        maxScore = p.getScore();
+        maxScoreCount = 1;
+        winnerId = p.getId();
+      }
+      else if (maxScore == p.getScore()){
+        maxScoreCount++;
+      }
+    }
+    if (maxScoreCount > 1){
+      for (int i=0; i<8; i++){
+        Player player = findPlayerWithChar(characters.get(i).getName());
+        if (player == null) continue;
+        if (player.getScore() != maxScore) continue;
+        winnerId = player.getId();
+        System.out.printf("Tie break: In the last round player %d has the highest rank character.\n", winnerId);
+        break;
+      }
+    }
+    System.out.printf("Congratulations, Player %d has won this game.\n", winnerId);
   }
 
 	public App()
@@ -579,6 +619,7 @@ public class App {
       if (isGameOver()) break;
       System.out.println("Everyone is done, new round!");
     }
+    endGame();
   }
 
   public static void main(String[] args)

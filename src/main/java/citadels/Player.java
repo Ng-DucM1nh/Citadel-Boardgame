@@ -3,6 +3,7 @@ package citadels;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
+import java.util.HashSet;
 
 public class Player
 {
@@ -15,6 +16,7 @@ public class Player
   private boolean killed;
   private boolean robbed;
   private Player robber;
+  private int score;
 
   public Player(int id)
   {
@@ -27,6 +29,7 @@ public class Player
     killed = false;
     robbed = false;
     robber = null;
+    score = 0;
   }
 
   public int getId()
@@ -131,6 +134,16 @@ public class Player
     this.robbed = true;
   }
 
+  public int getScore()
+  {
+    return score;
+  }
+
+  public void setScore(int score)
+  {
+    this.score = score;
+  }
+
   public void build(int pos)
   {
     System.out.printf("**build called with pos = %d**\n", pos);
@@ -204,6 +217,34 @@ public class Player
   {
     if (character.action(app, tokens, this)) return;
     System.out.println("Invalid action.");
+  }
+
+  public void scoreCalculation(App app)
+  {
+    System.out.printf("Player %d's score :\n", id);
+    int score = 0;
+    HashSet<String> colors = new HashSet<>();
+    for (Card c : placedCards.keySet()){
+      score += c.getPoint();
+      System.out.printf("Scored %d points with %s district card.\n", c.getPoint(), c.getName());
+      colors.add(c.getColor());
+    }
+    if (colors.size() == 5){
+      score += 3;
+      System.out.printf("Scored 3 points for having at least one district of each type.\n");
+    }
+    if (isCityCompleted(app)){
+      if (id == app.getFirstCompletePlayerId()){
+        score += 4;
+        System.out.printf("Scored 4 points for being the first to complete their city.\n");
+      }
+      else{
+        score += 2;
+        System.out.printf("Scored 2 points for completing their city.\n");
+      }
+    }
+    System.out.printf("Total score: %d.\n", score);
+    this.score = score;
   }
 
   public String disp()
