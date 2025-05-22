@@ -157,6 +157,7 @@ public class App {
       }
       p.addGold(2);
     }
+    humanPlayer.takeCard(new Card("Lighthouse", "purple", 0, 0, ""));
     System.out.printf("Starting Citadel with %d players...\n", numPlayers);
     System.out.println("You are player 1");
   }
@@ -484,7 +485,32 @@ public class App {
 
   public void promptResource(Player player)
   {
+    boolean human = (player.getId() == 1);
     String res = "";
+    int numDraw = 2, numPick = 1;
+    if (player.hasPlacedDistrict("Observatory")){
+      numDraw = 3;
+      System.out.printf("Observatory: Player %d may draw %d cards.\n", player.getId(), 3);
+    }
+    if (player.hasPlacedDistrict("Library")){
+      numPick = numDraw;
+      System.out.printf("Library: Player %d may keep %d cards.\n", player.getId(), numPick);
+    }
+    if (!human){
+      Random rand = new Random(System.currentTimeMillis());
+      while (true){
+        int choice = rand.nextInt(2);
+        if (choice == 0){
+          player.addGold(2);
+          System.out.printf("Player %d collected 2 gold\n", player.getId());
+          break;
+        }
+        else{
+          if (drawPick(numDraw, numPick, player)) break;
+        }
+      }
+      return;
+    }
     while (true){
       System.out.print("Collect 2 gold or draw two cards and pick one [gold/cards].\n> ");
       res = scanner.nextLine();
@@ -497,24 +523,26 @@ public class App {
         player.addGold(2);
         return;
       }
-      int numDraw = 2, numPick = 1;
-      if (player.hasPlacedDistrict("Observatory")){
-        numDraw = 3;
-        System.out.printf("Observatory: Player %d may draw %d cards.\n", player.getId(), 3);
-      }
-      if (player.hasPlacedDistrict("Library")){
-        numPick = numDraw;
-        System.out.printf("Library: Player %d may keep %d cards.\n", player.getId(), numPick);
-      }
+      
       if (drawPick(numDraw, numPick, player)) break;
     }
   }
 
   public boolean drawPick(int numDraw, int numPick, Player player)
   {
+    boolean human = (player.getId() == 1);
     if (deck.size() == 0){
-      System.out.println("deck empty");
+      if (human) System.out.println("deck empty");
       return false;
+    }
+    if (!human){
+      numPick = Math.min(numPick, numDraw);
+      numPick = Math.min(numPick, deck.size());
+      for (int i=0; i<numPick; i++){
+        player.takeCard(deck.pop());
+      }
+      System.out.printf("Player %d drew %d cards\n", player.getId(), numPick);
+      return true;
     }
     System.out.printf("%d remaining cards in deck\n", deck.size());
     numDraw = Math.min(numDraw, deck.size());
@@ -655,7 +683,7 @@ public class App {
       }
       if (!player.isKilled()) character.promptSkill(this, player);
       if (!player.isKilled()) character.passiveSkill(this, player);
-      // promptResource(player);
+      promptResource(player);
       prompt(myTurn);
       // if (player.isCityCompleted(this)){
       //   firstCompletePlayerId = player.getId();

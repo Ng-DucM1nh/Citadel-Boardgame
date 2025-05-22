@@ -222,7 +222,10 @@ public class Player
     if (deck.size() == 0) return;
     Scanner scanner = app.getScanner();
     System.out.printf("Cards in deck:\n");
-    deck.disp();
+    for (int i=0; i<deck.size(); i++){
+      Card c = deck.getCard(i);
+      System.out.printf("%d %s\n", i+1, c.display());
+    }
     System.out.printf("Lighthouse: You may choose one card [%d..%d]\n", 1, deck.size());
     int pos = -1;
     while (true){

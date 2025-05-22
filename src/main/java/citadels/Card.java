@@ -278,6 +278,6 @@ public class Card
 
   public String disp()
   {
-    return name+" "+color+" "+String.valueOf(cost)+" "+String.valueOf(point);
+    return name+" "+color+" "+String.valueOf(cost)+" "+String.valueOf(point)+" "+description;
   }
 }
