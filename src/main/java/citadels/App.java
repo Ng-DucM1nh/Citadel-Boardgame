@@ -159,14 +159,7 @@ public class App {
     }
     players.get(1).addPlacedCard(new Card("Great Wall", "", 0, 0, ""));
     players.get(1).addPlacedCard(new Card("dummy", "", 1, 1, ""));
-    humanPlayer.takeCard(new Card("Haunted City", "purple", 0, 0, ""));
-    // humanPlayer.addPlacedCard(new Card("red", "red", 0, 0, ""));
-    humanPlayer.addPlacedCard(new Card("blue", "blue", 0, 0, ""));
-    humanPlayer.addPlacedCard(new Card("green", "green", 0, 0, ""));
-    humanPlayer.addPlacedCard(new Card("yellow", "yellow", 0, 0, ""));
-    for (int i=0; i<8; i++){
-      humanPlayer.addPlacedCard(new Card("dummy", "purple", 0, 0, ""));
-    }
+    humanPlayer.addPlacedCard(new Card("School Of Magic", "purple", 0, 0, ""));
     System.out.printf("Starting Citadel with %d players...\n", numPlayers);
     System.out.println("You are player 1");
   }
@@ -613,6 +606,24 @@ public class App {
         continue;
       }
       System.out.println("Your turn.");
+      if (player.hasPlacedDistrict("School Of Magic")){
+        Card card = player.findPlacedCardByName("School Of Magic");
+        String targetCol = "purple";
+        if (character.getName().equals("Warlord")){
+          targetCol = "red";
+        }
+        else if (character.getName().equals("Bishop")){
+          targetCol = "blue";
+        }
+        else if (character.getName().equals("Merchant")){
+          targetCol = "green";
+        }
+        else if (character.getName().equals("King")){
+          targetCol = "yellow";
+        }
+        card.setColor(targetCol);
+        System.out.printf("For the purposes of income, the School Of Magic's color is considered to be %s.\n", targetCol);
+      }
       character.promptSkill(this);
       character.passiveSkill(this, player);
       promptResource(player);
