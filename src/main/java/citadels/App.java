@@ -137,16 +137,16 @@ public class App {
     // deal cards to players
     System.out.println("Dealing cards...");
     for (Player p : players){
-      for (int i=0; i<4; i++){
-        Card c = deck.pop();
-        p.takeCard(c);
-      }
+      // for (int i=0; i<4; i++){
+      //   Card c = deck.pop();
+      //   p.takeCard(c);
+      // }
       p.addGold(0);
     }
     players.get(1).addPlacedCard(new Card("Keep", "", 0, 0, ""));
     players.get(1).addPlacedCard(new Card("dummy", "", 0, 0, ""));
     humanPlayer.addPlacedCard(new Card("Poor House", "purple", 0, 0, ""));
-    humanPlayer.addPlacedCard(new Card("Wishing Well", "purple", 0, 0, ""));
+    humanPlayer.addPlacedCard(new Card("Park", "purple", 0, 0, ""));
     System.out.printf("Starting Citadel with %d players...\n", numPlayers);
     System.out.println("You are player 1");
   }
@@ -479,22 +479,15 @@ public class App {
         player.addGold(2);
         return;
       }
-      ArrayList<Card> picked = drawPick(2, 1);
-      if (picked == null){
-        System.out.println("deck empty");
-        continue;
-      }
-      for (Card c : picked){
-        player.takeCard(c);
-      }
-      return;
+      if (drawPick(2, 1, player)) break;
     }
   }
 
-  public ArrayList<Card> drawPick(int numDraw, int numPick)
+  public boolean drawPick(int numDraw, int numPick, Player player)
   {
     if (deck.size() == 0){
-      return null;
+      System.out.println("deck empty");
+      return false;
     }
     numDraw = Math.min(numDraw, deck.size());
     numPick = Math.min(numPick, numDraw);
@@ -554,12 +547,13 @@ public class App {
     System.out.printf("You chose cards:\n");
     for (Card c : picked){
       System.out.println(c.display());
+      player.takeCard(c);
     }
     while (choices.size() > 0){
       deck.addCard(choices.get(0));
       choices.remove(0);
     }
-    return picked;
+    return true;
   }
 
   public void turn()
@@ -606,9 +600,13 @@ public class App {
       if (player.isCityCompleted(this)){
         firstCompletePlayerId = player.getId();
       }
-      if (player.hasPlacedDistrict("Poor House")){
+      if (player.hasPlacedDistrict("Poor House") && player.getGold() == 0){
         player.addGold(1);
-        System.out.printf("Player %d received 1 gold from Poor House.\n", player.getId());
+        System.out.printf("Poor House: Player %d received 1 gold.\n", player.getId());
+      }
+      if (player.hasPlacedDistrict("Park") && player.getNumCards() == 0){
+        System.out.printf("Park: Player %d may draw 2 cards.\n", player.getId());
+        drawPick(2, 2, player);
       }
     }
   }
