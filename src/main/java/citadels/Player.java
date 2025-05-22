@@ -146,7 +146,10 @@ public class Player
 
   public void build(App app, int pos)
   {
-    System.out.printf("**build called with pos = %d**\n", pos);
+    if (isKilled()){
+      System.out.printf("You can't build district cards after being assassinated\n");
+      return;
+    }
     if (pos < 0 || pos >= cards.size()){
       System.out.println("Invalid card position");
       return;

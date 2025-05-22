@@ -159,7 +159,7 @@ public class App {
     }
     players.get(1).addPlacedCard(new Card("Great Wall", "", 0, 0, ""));
     players.get(2).addPlacedCard(new Card("Bell Tower", "purple", 1, 1, ""));
-    humanPlayer.takeCard(new Card("Lighthouse", "purple", 0, 0, ""));
+    humanPlayer.addPlacedCard(new Card("Hospital", "purple", 0, 0, ""));
     System.out.printf("Starting Citadel with %d players...\n", numPlayers);
     System.out.println("You are player 1");
   }
@@ -605,11 +605,16 @@ public class App {
       }
       System.out.printf("Player %d is the %s\n", player.getId(), character.getName());
       if (player.isKilled()){
-        System.out.printf("Player %d loses their turn because they were assassinated.\n", player.getId());
-        prompt(false);
-        continue;
+        if (player.hasPlacedDistrict("Hospital") == false){
+          System.out.printf("Player %d loses their turn because they were assassinated.\n", player.getId());
+          prompt(false);
+          continue;
+        }
+        else{
+          System.out.printf("Hospital: Player %d may take an action but may not build a district card or use character's power\n", player.getId());
+        }
       }
-      if (player.isRobbed()){
+      if (player.isRobbed() && !player.isKilled()){
         System.out.printf("The Thief steals %d gold from the %s.\n", player.getGold(), character.getName());
         int gold = player.getGold();
         Player robber = player.getRobber();
@@ -639,8 +644,8 @@ public class App {
         card.setColor(targetCol);
         System.out.printf("For the purposes of income, the School Of Magic's color is considered to be %s.\n", targetCol);
       }
-      character.promptSkill(this);
-      character.passiveSkill(this, player);
+      if (!player.isKilled()) character.promptSkill(this);
+      if (!player.isKilled()) character.passiveSkill(this, player);
       promptResource(player);
       prompt(true);
       if (player.isCityCompleted(this)){

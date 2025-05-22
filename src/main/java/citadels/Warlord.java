@@ -28,6 +28,10 @@ public class Warlord extends Character
   {
     if (tokens.length != 4) return false;
     if (tokens[1].equals("destroy") == false) return false;
+    if (player.isKilled()){
+      System.out.println("You can't use the character's ability after being assassinated");
+      return true;
+    }
     if (numAction <= 0){
       System.out.println("You can no longer use the character's ability for this round.");
       return true;
