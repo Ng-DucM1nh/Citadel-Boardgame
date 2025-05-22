@@ -79,6 +79,7 @@ public class Warlord extends Character
     target.removePlacedCard(targetCard);
     player.addGold(-cost);
     numAction--;
+    targetCard.destroy(app);
     System.out.printf("Player %d spent %d gold to destroy Player %d's %s.\n", player.getId(), cost, targetId, districtName);
     for (Player p : players){
       if (p.getId() != player.getId() && p.hasPlacedDistrict("Graveyard")){

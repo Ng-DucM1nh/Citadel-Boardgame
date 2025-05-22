@@ -177,7 +177,6 @@ public class Player
     System.out.printf("Built %s\n", card.display());
     if (card.getName().equals("Bell Tower")){
       app.setNumDistrictGoal(7);
-      System.out.printf("Bell Tower: A complete city must have at least 7 districts.\n");
     }
   }
 

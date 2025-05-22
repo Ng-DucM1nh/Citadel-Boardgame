@@ -77,6 +77,13 @@ public class Card
 
   public String actionDesc() {return "";}
 
+  public void destroy(App app)
+  {
+    if (name.equals("Bell Tower")){
+      app.setNumDistrictGoal(8);
+    }
+  }
+
   public String disp()
   {
     return name+" "+color+" "+String.valueOf(cost)+" "+String.valueOf(point);

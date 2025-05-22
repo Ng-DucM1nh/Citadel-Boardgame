@@ -158,7 +158,7 @@ public class App {
       p.addGold(100);
     }
     players.get(1).addPlacedCard(new Card("Great Wall", "", 0, 0, ""));
-    players.get(2).addPlacedCard(new Card("Graveyard", "purple", 1, 1, ""));
+    players.get(2).addPlacedCard(new Card("Bell Tower", "purple", 1, 1, ""));
     humanPlayer.takeCard(new Card("Bell Tower", "purple", 0, 0, ""));
     System.out.printf("Starting Citadel with %d players...\n", numPlayers);
     System.out.println("You are player 1");
@@ -174,10 +174,16 @@ public class App {
   public void setNumDistrictGoal(int num)
   {
     numDistrictGoal = num;
+    System.out.printf("A completed city must have at least %d districts.\n", numDistrictGoal);
   }
 
   public boolean isGameOver()
   {
+    int districtGoal = 8;
+    for (Player p : players){
+      if (p.hasPlacedDistrict("Bell Tower")) districtGoal = 7;
+    }
+    setNumDistrictGoal(districtGoal);
     for (Player p : players){
       if (p.isCityCompleted(this)) return true;
     }
@@ -694,7 +700,6 @@ public class App {
     initialSetup();
     while(true){
       round++;
-      System.out.printf("A complete city must have at least %d districts.\n", numDistrictGoal);
       characterSelection();
       turn();
       if (isGameOver()) break;
