@@ -155,8 +155,7 @@ public class App {
         Card c = deck.pop();
         p.takeCard(c);
       }
-      p.addGold(100);
-      p.addPlacedCard(new Card("dummy", "purple", 0, 0, ""));
+      p.addGold(2);
     }
     System.out.printf("Starting Citadel with %d players...\n", numPlayers);
     System.out.println("You are player 1");
@@ -222,8 +221,10 @@ public class App {
     }
     else{
       // bot
-      player.setCharacter(charList.get(0));
-      charList.remove(0);
+      Random rand = new Random(System.currentTimeMillis());
+      int id = rand.nextInt(charList.size());
+      player.setCharacter(charList.get(id));
+      charList.remove(id);
     }
     System.out.printf("Player %d chose a character.\n", player.getId());
     return charList;
@@ -434,33 +435,33 @@ public class App {
     System.out.println("================================\nSELECTION PHASE\n================================");
     prompt(false);
     // shuffle character cards and remove some cards
-    // Collections.shuffle(characters, new Random(System.currentTimeMillis()));
-    // Character facedownChar = characters.get(0);
-    // characters.remove(0);
-    // System.out.println("A mystery character was removed.");
-    // int faceups = -1;
-    // switch(players.size()){
-    //   case 4:
-    //     faceups = 2;
-    //     break;
-    //   case 5:
-    //     faceups = 1;
-    //     break;
-    //   case 6:
-    //     faceups = 0;
-    //     break;
-    //   case 7:
-    //     faceups = 0;
-    //     break;
-    // }
-    // for (int i=characters.size()-1; i>=0 && faceups > 0; i--){
-    //   Character c = characters.get(i);
-    //   if (c.getName() == "King") continue;
-    //   System.out.printf("%s was removed.\n", c.getName());
-    //   characters.remove(i);
-    //   faceups--;
-    // }
-    Character facedownChar = null; ////////////////////////////////////////////////////
+    Collections.shuffle(characters, new Random(System.currentTimeMillis()));
+    Character facedownChar = characters.get(0);
+    characters.remove(0);
+    System.out.println("A mystery character was removed.");
+    int faceups = -1;
+    switch(players.size()){
+      case 4:
+        faceups = 2;
+        break;
+      case 5:
+        faceups = 1;
+        break;
+      case 6:
+        faceups = 0;
+        break;
+      case 7:
+        faceups = 0;
+        break;
+    }
+    for (int i=characters.size()-1; i>=0 && faceups > 0; i--){
+      Character c = characters.get(i);
+      if (c.getName() == "King") continue;
+      System.out.printf("%s was removed.\n", c.getName());
+      characters.remove(i);
+      faceups--;
+    }
+    // Character facedownChar = null; ////////////////////////////////////////////////////
     for (Player player : players){
       characters = chooseCharacter(player, characters, facedownChar);
       prompt(false);
