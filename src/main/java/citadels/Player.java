@@ -212,7 +212,7 @@ public class Player
     takeCard(deck.getCard(pos));
     System.out.printf("You chose card %s\n", deck.getCard(pos).display());
     deck.removeCard(pos);
-    deck.disp();
+    deck.shuffle();
   }
 
   public void removePlacedCard(Card card)
