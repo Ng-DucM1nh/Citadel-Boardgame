@@ -57,7 +57,7 @@ public class App {
     Scanner scanner = new Scanner(cardsFile); // this can possibly throw FileNotFoundException
     deck = new Deck();
     scanner.nextLine();
-    while (scanner.hasNextLine()){
+    for (int i=0; i<6; i++){
       String s = scanner.nextLine();
       String[] tokens = s.split("\t");
       String name = tokens[0];
@@ -159,7 +159,7 @@ public class App {
     }
     players.get(1).addPlacedCard(new Card("Great Wall", "", 0, 0, ""));
     players.get(2).addPlacedCard(new Card("Bell Tower", "purple", 1, 1, ""));
-    humanPlayer.takeCard(new Card("Bell Tower", "purple", 0, 0, ""));
+    humanPlayer.takeCard(new Card("Lighthouse", "purple", 0, 0, ""));
     System.out.printf("Starting Citadel with %d players...\n", numPlayers);
     System.out.println("You are player 1");
   }

@@ -18,6 +18,18 @@ public class Deck
     cards.add(card);
   }
 
+  public Card getCard(int pos)
+  {
+    if (pos < 0 || pos >= cards.size()) return null;
+    return cards.get(pos);
+  }
+
+  public void removeCard(int pos)
+  {
+    if (pos < 0 || pos >= cards.size()) return;
+    cards.remove(pos);
+  }
+
   public void shuffle()
   {
     Collections.shuffle(cards, new Random(System.currentTimeMillis()));

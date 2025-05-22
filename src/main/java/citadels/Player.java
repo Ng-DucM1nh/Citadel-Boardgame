@@ -178,6 +178,41 @@ public class Player
     if (card.getName().equals("Bell Tower")){
       app.setNumDistrictGoal(7);
     }
+    if (card.getName().equals("Lighthouse")){
+      lighthouse(app);
+    }
+  }
+
+  public void lighthouse(App app)
+  {
+    Deck deck = app.getDeck();
+    if (deck.size() == 0) return;
+    Scanner scanner = app.getScanner();
+    System.out.printf("Cards in deck:\n");
+    deck.disp();
+    System.out.printf("Lighthouse: You may choose one card [%d..%d]\n", 1, deck.size());
+    int pos = -1;
+    while (true){
+      System.out.print("> ");
+      String res = scanner.nextLine();
+      try{
+        pos = Integer.parseInt(res);
+      }
+      catch (Exception e){
+        System.out.println("Invalid card position");
+        continue;
+      }
+      if (pos < 1 || pos > deck.size()){
+        System.out.println("Invalid card position");
+        continue;
+      }
+      break;
+    }
+    pos--;
+    takeCard(deck.getCard(pos));
+    System.out.printf("You chose card %s\n", deck.getCard(pos).display());
+    deck.removeCard(pos);
+    deck.disp();
   }
 
   public void removePlacedCard(Card card)
