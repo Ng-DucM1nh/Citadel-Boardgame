@@ -160,12 +160,17 @@ public class Player
       System.out.println("This building is already built");
       return;
     }
-    if (gold < card.getCost()){
+    int cost = card.getCost();
+    if (hasPlacedDistrict("Factory") && card.getColor().equals("purple")){
+      cost--;
+      System.out.printf("Factory: cost of building reduced by 1 to %d.\n", cost);
+    }
+    if (gold < cost){
       System.out.println("You don't have enough gold.");
       return;
     }
     character.decNumBuild();
-    gold -= card.getCost();
+    gold -= cost;
     placedCards.put(card, 1);
     cards.remove(pos);
     System.out.printf("Built %s\n", card.display());

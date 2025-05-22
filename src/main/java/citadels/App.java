@@ -145,15 +145,15 @@ public class App {
     // deal cards to players
     System.out.println("Dealing cards...");
     for (Player p : players){
-      // for (int i=0; i<4; i++){
-      //   Card c = deck.pop();
-      //   p.takeCard(c);
-      // }
-      p.addGold(0);
+      for (int i=0; i<4; i++){
+        Card c = deck.pop();
+        p.takeCard(c);
+      }
+      p.addGold(100);
     }
-    players.get(1).addPlacedCard(new Card("Throne Room", "", 0, 0, ""));
+    players.get(1).addPlacedCard(new Card("Factory", "", 0, 0, ""));
     players.get(1).addPlacedCard(new Card("dummy", "", 0, 0, ""));
-    humanPlayer.addPlacedCard(new Card("Poor House", "purple", 0, 0, ""));
+    humanPlayer.addPlacedCard(new Card("Factory", "purple", 0, 0, ""));
     humanPlayer.addPlacedCard(new Card("Park", "purple", 0, 0, ""));
     System.out.printf("Starting Citadel with %d players...\n", numPlayers);
     System.out.println("You are player 1");
