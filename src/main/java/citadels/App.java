@@ -159,7 +159,8 @@ public class App {
     }
     players.get(1).addPlacedCard(new Card("Great Wall", "", 0, 0, ""));
     players.get(1).addPlacedCard(new Card("dummy", "", 1, 1, ""));
-    humanPlayer.addPlacedCard(new Card("School Of Magic", "purple", 0, 0, ""));
+    humanPlayer.addPlacedCard(new Card("Observatory", "purple", 0, 0, ""));
+    humanPlayer.addPlacedCard(new Card("Library", "purple", 0, 0, ""));
     System.out.printf("Starting Citadel with %d players...\n", numPlayers);
     System.out.println("You are player 1");
   }
@@ -492,7 +493,16 @@ public class App {
         player.addGold(2);
         return;
       }
-      if (drawPick(2, 1, player)) break;
+      int numDraw = 2, numPick = 1;
+      if (player.hasPlacedDistrict("Observatory")){
+        numDraw = 3;
+        System.out.printf("Observatory: Player %d may draw %d cards.\n", player.getId(), 3);
+      }
+      if (player.hasPlacedDistrict("Library")){
+        numPick = numDraw;
+        System.out.printf("Library: Player %d may keep %d cards.\n", player.getId(), numPick);
+      }
+      if (drawPick(numDraw, numPick, player)) break;
     }
   }
 
