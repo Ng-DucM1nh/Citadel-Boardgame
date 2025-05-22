@@ -144,7 +144,7 @@ public class Player
     this.score = score;
   }
 
-  public void build(int pos, int round)
+  public void build(App app, int pos)
   {
     System.out.printf("**build called with pos = %d**\n", pos);
     if (pos < 0 || pos >= cards.size()){
@@ -173,8 +173,12 @@ public class Player
     gold -= cost;
     placedCards.put(card, 1);
     cards.remove(pos);
-    card.setRoundBuilt(round);
+    card.setRoundBuilt(app.getRound());
     System.out.printf("Built %s\n", card.display());
+    if (card.getName().equals("Bell Tower")){
+      app.setNumDistrictGoal(7);
+      System.out.printf("Bell Tower: A complete city must have at least 7 districts.\n");
+    }
   }
 
   public void removePlacedCard(Card card)

@@ -159,8 +159,7 @@ public class App {
     }
     players.get(1).addPlacedCard(new Card("Great Wall", "", 0, 0, ""));
     players.get(2).addPlacedCard(new Card("Graveyard", "purple", 1, 1, ""));
-    humanPlayer.addPlacedCard(new Card("Observatory", "purple", 0, 0, ""));
-    humanPlayer.addPlacedCard(new Card("Library", "purple", 0, 0, ""));
+    humanPlayer.takeCard(new Card("Bell Tower", "purple", 0, 0, ""));
     System.out.printf("Starting Citadel with %d players...\n", numPlayers);
     System.out.println("You are player 1");
   }
@@ -275,7 +274,7 @@ public class App {
       System.out.println("Invalid card position");
       return;
     }
-    humanPlayer.build(pos-1, round);
+    humanPlayer.build(this, pos-1);
   }
 
   public void citadelCommand(String[] tokens)
@@ -695,6 +694,7 @@ public class App {
     initialSetup();
     while(true){
       round++;
+      System.out.printf("A complete city must have at least %d districts.\n", numDistrictGoal);
       characterSelection();
       turn();
       if (isGameOver()) break;
