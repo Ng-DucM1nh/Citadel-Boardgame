@@ -21,7 +21,7 @@ public class Warlord extends Character
 
   public String actionDesc()
   {
-    return "action destroy <playerId> <nameOfDistrict>\n";
+    return "action destroy <playerId> <District_Name_Seperated_By_Underscore>\n";
   }
 
   public boolean action(App app, String[] tokens, Player player)
@@ -40,7 +40,6 @@ public class Warlord extends Character
       System.out.println("Invalid playerId");
       return true;
     }
-    String districtName = tokens[3];
     ArrayList<Player> players = app.getPlayers();
     if (targetId < 1 || targetId > players.size()){
       System.out.println("Invalid playerId");
@@ -52,6 +51,13 @@ public class Warlord extends Character
       System.out.println("You can't destroy a district in a completed city.");
       return true;
     }
+    String districtName = "";
+    String[] districtNameTokens = tokens[3].split("_");
+    for (int i=0; i<districtNameTokens.length; i++){
+      districtName += districtNameTokens[i];
+      if (i < districtNameTokens.length-1) districtName += " ";
+    }
+    System.out.printf("district name: %s\n", districtName);
     Card targetCard = target.findPlacedCardByName(districtName);
     if (targetCard == null){
       System.out.println("Invalid card");
@@ -62,6 +68,10 @@ public class Warlord extends Character
       return true;
     }
     int cost = targetCard.getDestroyCost();
+    if (target.hasPlacedDistrict("Great Wall") && targetCard.getName().equals("Great Wall") == false){
+      cost++;
+      System.out.printf("Great Wall: The cost of destroying increases by 1 to %d.\n", cost);
+    }
     if (player.getGold() < cost){
       System.out.printf("You don't have enough gold.\n", player.getId());
       return true;

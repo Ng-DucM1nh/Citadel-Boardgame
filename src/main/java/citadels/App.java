@@ -151,8 +151,8 @@ public class App {
       }
       p.addGold(100);
     }
-    players.get(1).addPlacedCard(new Card("Factory", "", 0, 0, ""));
-    players.get(1).addPlacedCard(new Card("dummy", "", 0, 0, ""));
+    players.get(1).addPlacedCard(new Card("Great Wall", "", 0, 0, ""));
+    players.get(1).addPlacedCard(new Card("dummy", "", 1, 1, ""));
     humanPlayer.addPlacedCard(new Card("Factory", "purple", 0, 0, ""));
     humanPlayer.addPlacedCard(new Card("Park", "purple", 0, 0, ""));
     System.out.printf("Starting Citadel with %d players...\n", numPlayers);
