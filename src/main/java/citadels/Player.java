@@ -231,13 +231,19 @@ public class Player
   {
     System.out.printf("Player %d's score :\n", id);
     int score = 0;
-    HashSet<String> colors = new HashSet<>();
+    HashMap<String,Integer> colorCount = new HashMap<>();
     for (Card c : placedCards.keySet()){
       score += c.getPoint();
       System.out.printf("Scored %d points with %s district card.\n", c.getPoint(), c.getName());
-      colors.add(c.getColor());
+      String col = c.getColor();
+      if (colorCount.containsKey(col) == false){
+        colorCount.put(col, 1);
+      }
+      else{
+        colorCount.put(col, colorCount.get(col)+1);
+      }
     }
-    if (colors.size() == 5){
+    if (colorCount.size() == 5){
       score += 3;
       System.out.printf("Scored 3 points for having at least one district of each type.\n");
     }
@@ -258,6 +264,11 @@ public class Player
     if (hasPlacedDistrict("Map Room")){
       score += getNumCards();
       System.out.printf("Map Room: scored %d points for having %d cards.\n", getNumCards(), getNumCards());
+    }
+    if (hasPlacedDistrict("Wishing Well")){
+      int add = (colorCount.containsKey("purple") ? colorCount.get("purple")-1 : 0);
+      score += add;
+      System.out.printf("Wishing Well: scored %d points for each other purple cards.\n", add);
     }
     System.out.printf("Total score: %d.\n", score);
     this.score = score;

@@ -145,7 +145,8 @@ public class App {
     }
     players.get(1).addPlacedCard(new Card("Keep", "", 0, 0, ""));
     players.get(1).addPlacedCard(new Card("dummy", "", 0, 0, ""));
-    humanPlayer.addPlacedCard(new Card("Map Room", "", 0, 0, ""));
+    humanPlayer.addPlacedCard(new Card("Map Room", "purple", 0, 0, ""));
+    humanPlayer.addPlacedCard(new Card("Wishing Well", "purple", 0, 0, ""));
     for (int i=0; i<8; i++){
       humanPlayer.addPlacedCard(new Card("dummy", "", 0, 0, ""));
     }
