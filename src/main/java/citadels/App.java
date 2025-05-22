@@ -629,11 +629,12 @@ public class App {
         robber.addGold(gold);
         player.addGold(-gold);
       }
-      if (player.getId() != 1){
-        prompt(false);
-        continue;
-      }
-      System.out.println("Your turn.");
+      // if (player.getId() != 1){
+      //   prompt(false);
+      //   continue;
+      // }
+      boolean myTurn = (player.getId() == 1);
+      if (myTurn) System.out.println("Your turn.");
       if (player.hasPlacedDistrict("School Of Magic")){
         Card card = player.findPlacedCardByName("School Of Magic");
         String targetCol = "purple";
@@ -652,22 +653,23 @@ public class App {
         card.setColor(targetCol);
         System.out.printf("For the purposes of income, the School Of Magic's color is considered to be %s.\n", targetCol);
       }
-      if (!player.isKilled()) character.promptSkill(this);
+      if (!player.isKilled()) character.promptSkill(this, player);
       if (!player.isKilled()) character.passiveSkill(this, player);
-      promptResource(player);
-      prompt(true);
-      if (player.isCityCompleted(this)){
-        firstCompletePlayerId = player.getId();
-      }
-      if (player.hasPlacedDistrict("Poor House") && player.getGold() == 0){
-        player.addGold(1);
-        System.out.printf("Poor House: Player %d received 1 gold.\n", player.getId());
-      }
-      if (player.hasPlacedDistrict("Park") && player.getNumCards() == 0){
-        System.out.printf("Park: Player %d may draw 2 cards.\n", player.getId());
-        drawPick(2, 2, player);
-      }
+      // promptResource(player);
+      prompt(myTurn);
+      // if (player.isCityCompleted(this)){
+      //   firstCompletePlayerId = player.getId();
+      // }
+      // if (player.hasPlacedDistrict("Poor House") && player.getGold() == 0){
+      //   player.addGold(1);
+      //   System.out.printf("Poor House: Player %d received 1 gold.\n", player.getId());
+      // }
+      // if (player.hasPlacedDistrict("Park") && player.getNumCards() == 0){
+      //   System.out.printf("Park: Player %d may draw 2 cards.\n", player.getId());
+      //   drawPick(2, 2, player);
+      // }
       player.resetCard();
+      player.resetPlayer();
     }
   }
 

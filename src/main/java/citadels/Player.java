@@ -150,6 +150,12 @@ public class Player
     this.score = score;
   }
 
+  public void resetPlayer()
+  {
+    killed = false;
+    robbed = false; robber = null;
+  }
+
   public void build(App app, int pos)
   {
     if (isKilled()){

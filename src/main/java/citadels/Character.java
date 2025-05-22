@@ -19,7 +19,7 @@ public class Character
     return name;
   }
 
-  public void promptSkill(App app){}
+  public void promptSkill(App app, Player player){}
 
   public int getNumBuild()
   {
