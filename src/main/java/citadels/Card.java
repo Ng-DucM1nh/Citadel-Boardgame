@@ -91,7 +91,7 @@ public class Card
       return "action Laboratory <pos1>";
     }
     if (name.equals("Smithy")){
-      return "Once during your turn, you may pay two gold to draw 3 district cards.";
+      return "action Smithy";
     }
     if (name.equals("Armory")){
       return "During your turn, you may destroy the Armory in order to destory any other district card of your choice in another player's city";
@@ -104,11 +104,11 @@ public class Card
 
   public boolean action(App app, String[] tokens, Player player)
   {
-    if (tokens[1].equals("Laboratory")){
+    if (tokens[1].equals(name) && name.equals("Laboratory")){
       actionLaboratory(app, tokens, player);
       return true;
     }
-    if (tokens[1].equals("Smithy")){
+    if (tokens[1].equals(name) && name.equals("Smithy")){
       actionSmithy(app, tokens, player);
       return true;
     }
@@ -153,6 +153,10 @@ public class Card
       System.out.println("Invalid arguments");
       return;
     }
+    if (used){
+      System.out.println("You can only use this card's ability once per turn");
+      return;
+    }
     if (player.getGold() < 2){
       System.out.println("You don't have enough gold");
       return;
@@ -164,6 +168,7 @@ public class Card
     }
     player.addGold(-2);
     app.drawPick(3, 3, player);
+    setUsed(true);
   }
 
   public void destroy(App app)
