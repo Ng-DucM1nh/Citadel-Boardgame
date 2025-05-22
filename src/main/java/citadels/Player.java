@@ -279,16 +279,31 @@ public class Player
     return cnt;
   }
 
+  public void resetCard()
+  {
+    for (Card c : placedCards.keySet()){
+      c.setUsed(false);
+    }
+  }
+
   public String getActionList()
   {
     String charAction = "character's action:\n" + character.actionDesc();
     String cardAction = "special cards' action:\n";
+    for (Card c : placedCards.keySet()){
+      String s = c.actionDesc();
+      if (s.equals("")) continue;
+      cardAction += s + "\n";
+    }
     return charAction+"\n"+cardAction;
   }
 
   public void action(App app, String[] tokens)
   {
     if (character.action(app, tokens, this)) return;
+    for (Card c : placedCards.keySet()){
+      if (c.action(app, tokens, this)) return;
+    }
     System.out.println("Invalid action.");
   }
 

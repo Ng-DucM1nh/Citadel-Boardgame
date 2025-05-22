@@ -159,7 +159,7 @@ public class App {
     }
     players.get(1).addPlacedCard(new Card("Great Wall", "", 0, 0, ""));
     players.get(2).addPlacedCard(new Card("Bell Tower", "purple", 1, 1, ""));
-    humanPlayer.addPlacedCard(new Card("Quarry", "purple", 0, 0, ""));
+    humanPlayer.addPlacedCard(new Card("Laboratory", "purple", 0, 0, ""));
     Card dummy = new Card("dummy", "purple", 0, 0, "");
     for (int i=0; i<3; i++){
       humanPlayer.takeCard(dummy);
@@ -663,6 +663,7 @@ public class App {
         System.out.printf("Park: Player %d may draw 2 cards.\n", player.getId());
         drawPick(2, 2, player);
       }
+      player.resetCard();
     }
   }
 

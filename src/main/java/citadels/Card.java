@@ -1,5 +1,8 @@
 package citadels;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 public class Card
 {
   private String name;
@@ -9,6 +12,7 @@ public class Card
   private int point;
   private String description;
   private int roundBuilt;
+  private boolean used;
 
   public Card(String name, String color, int cost, int point, String description)
   {
@@ -19,6 +23,7 @@ public class Card
     this.point = point;
     this.description = description;
     this.roundBuilt = -1;
+    used = false;
 
     if (name.equals("Dragon Gate") || name.equals("University")){
       this.point = 8;
@@ -70,12 +75,73 @@ public class Card
     roundBuilt = round;
   }
 
+  public void setUsed(boolean used)
+  {
+    this.used = used;
+  }
+
   public String display()
   {
     return name+" ["+color+String.valueOf(cost)+"]";
   }
 
-  public String actionDesc() {return "";}
+  public String actionDesc()
+  {
+    if (name.equals("Laboratory")){
+      return "action Laboratory <pos1>";
+    }
+    if (name.equals("Smithy")){
+      return "Once during your turn, you may pay two gold to draw 3 district cards.";
+    }
+    if (name.equals("Armory")){
+      return "During your turn, you may destroy the Armory in order to destory any other district card of your choice in another player's city";
+    }
+    if (name.equals("Museum")){
+      return "On your turn, you may place on district card from your hand face down under the Museum.  At the end of the game, you score one extra point for every card under the Museum";
+    }
+    return "";
+  }
+
+  public boolean action(App app, String[] tokens, Player player)
+  {
+    if (tokens[1].equals("Laboratory")){
+      actionLaboratory(app, tokens, player);
+      return true;
+    }
+    return false;
+  }
+
+  public void actionLaboratory(App app, String[] tokens, Player player)
+  {
+    if (tokens.length != 3){
+      System.out.println("Invalid arguments");
+      return;
+    }
+    if (used){
+      System.out.println("You can only use this card's ability once per turn");
+      return;
+    }
+    int pos = -1;
+    try{
+      pos = Integer.parseInt(tokens[2]);
+    }
+    catch (Exception e){
+      System.out.println("Invalid card position");
+      return;
+    }
+    if (pos < 1 || pos > player.getNumCards()){
+      System.out.println("Invalid card position");
+      return;
+    }
+    pos--;
+    ArrayList<Card> cards = player.getCards();
+    Card card = cards.get(pos);
+    cards.remove(pos);
+    player.setCards(cards);
+    player.addGold(1);
+    setUsed(true);
+    System.out.printf("Player %d discard card %s for 1 gold\n", player.getId(), card.display());
+  }
 
   public void destroy(App app)
   {
