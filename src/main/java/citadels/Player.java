@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.util.HashSet;
+import java.util.Random;
 
 public class Player
 {
@@ -221,33 +222,39 @@ public class Player
   {
     Deck deck = app.getDeck();
     if (deck.size() == 0) return;
-    Scanner scanner = app.getScanner();
-    System.out.printf("Cards in deck:\n");
-    for (int i=0; i<deck.size(); i++){
-      Card c = deck.getCard(i);
-      System.out.printf("%d %s\n", i+1, c.display());
-    }
-    System.out.printf("Lighthouse: You may choose one card [%d..%d]\n", 1, deck.size());
     int pos = -1;
-    while (true){
-      System.out.print("> ");
-      String res = scanner.nextLine();
-      try{
-        pos = Integer.parseInt(res);
-      }
-      catch (Exception e){
-        System.out.println("Invalid card position");
-        continue;
-      }
-      if (pos < 1 || pos > deck.size()){
-        System.out.println("Invalid card position");
-        continue;
-      }
-      break;
+    System.out.printf("Lighthouse: Player %d may choose one card [%d..%d]\n", id, 1, deck.size());
+    if (id != 1){
+      Random rand = new Random(System.currentTimeMillis());
+      pos = rand.nextInt(deck.size());
     }
-    pos--;
+    else{
+      Scanner scanner = app.getScanner();
+      System.out.printf("Cards in deck:\n");
+      for (int i=0; i<deck.size(); i++){
+        Card c = deck.getCard(i);
+        System.out.printf("%d %s\n", i+1, c.display());
+      }
+      while (true){
+        System.out.print("> ");
+        String res = scanner.nextLine();
+        try{
+          pos = Integer.parseInt(res);
+        }
+        catch (Exception e){
+          System.out.println("Invalid card position");
+          continue;
+        }
+        if (pos < 1 || pos > deck.size()){
+          System.out.println("Invalid card position");
+          continue;
+        }
+        break;
+      }
+      pos--;
+    }
     takeCard(deck.getCard(pos));
-    System.out.printf("You chose card %s\n", deck.getCard(pos).display());
+    System.out.printf("Player %d chose card %s\n", id, deck.getCard(pos).display());
     deck.removeCard(pos);
     deck.shuffle();
   }

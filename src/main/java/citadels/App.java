@@ -157,13 +157,17 @@ public class App {
     // deal cards to players
     System.out.println("Dealing cards...");
     for (Player p : players){
-      for (int i=0; i<4; i++){
-        Card c = deck.pop();
-        p.takeCard(c);
-      }
       p.addGold(100);
       for (int i=0; i<3; i++){
         p.addPlacedCard(deck.pop());
+      }
+      if (p.getId() == 2){
+        p.takeCard(new Card("Lighthouse", "purple", 0, 0, ""));
+        continue;
+      }
+      for (int i=0; i<4; i++){
+        Card c = deck.pop();
+        p.takeCard(c);
       }
     }
     System.out.printf("Starting Citadel with %d players...\n", numPlayers);
@@ -395,7 +399,6 @@ public class App {
       int numTry = player.getNumCards();
       while (player.getCharacter().getNumBuild() > 0 && numTry-- > 0){
         int pos = rand.nextInt(player.getNumCards())+1;
-        System.out.printf("random card %d\n", pos);
         buildCommand(new String[] {"build", String.valueOf(pos)}, player);
       }
     }
