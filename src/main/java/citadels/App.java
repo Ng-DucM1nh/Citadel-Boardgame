@@ -13,7 +13,7 @@ public class App {
 
 	private File cardsFile;
   private ArrayList<Player> players;
-  private Crown crown;
+  private int crownOwnerId;
   private Deck deck;
   private ArrayList<Character> characters;
   private Scanner scanner;
@@ -84,22 +84,13 @@ public class App {
     }
     for (Player p : players){
       if (p.hasPlacedDistrict("Throne Room") == false) continue;
-      if (crown.getOwner().getId() != crownPlayerId){
+      if (crownOwnerId != crownPlayerId){
         p.addGold(1);
         System.out.printf("Throne Room: Player %d receives 1 gold.\n", p.getId());
       }
       break;
     }
-    for (int i=0; i<players.size(); i++){
-      Player p = players.get(i);
-      if (p.getId() != crownPlayerId){
-        p.setCrown(false);
-      }
-      else{
-        p.setCrown(true);
-        crown.setOwner(p);
-      }
-    }
+    crownOwnerId = crownPlayerId;
   }
 
   public void addCharacters()
@@ -118,7 +109,7 @@ public class App {
   public void initialSetup()
   {
     players = new ArrayList<>();
-    crown = new Crown();
+    crownOwnerId = -1;
     characters = new ArrayList<>();
     // prompt for the number of players
     
@@ -157,13 +148,13 @@ public class App {
     System.out.println("Dealing cards...");
     for (Player p : players){
       p.addGold(100);
-      for (int i=0; i<3; i++){
-        p.addPlacedCard(deck.pop());
-      }
-      if (p.getId() == 2){
-        p.takeCard(new Card("Lighthouse", "purple", 0, 0, ""));
-        continue;
-      }
+      // for (int i=0; i<3; i++){
+      //   p.addPlacedCard(deck.pop());
+      // }
+      // if (p.getId() == 2){
+      //   p.takeCard(new Card("Lighthouse", "purple", 0, 0, ""));
+      //   continue;
+      // }
       for (int i=0; i<4; i++){
         Card c = deck.pop();
         p.takeCard(c);
@@ -432,15 +423,16 @@ public class App {
     }
     if (charName.equals("Warlord")){
       int c = rand.nextInt(2);
-      c = 1;
       if (c == 0) return;
       int id = -1;
       while (id == -1 || id == player.getId()){
         id = rand.nextInt(players.size())+1;
       }
       Player target = players.get(id-1);
-      int pos = rand.nextInt(player.getNumPlacedCards());
-      String cardName = player.findPlacedCardByPos(pos).getName().replace(' ','_');
+      if (target.getNumPlacedCards() == 0) return;
+      int pos = rand.nextInt(target.getNumPlacedCards());
+      String cardName = target.findPlacedCardByPos(pos).getName().replace(' ','_');
+      // System.out.printf("action destroy %d %s\n", id, cardName);
       actionCommand(new String[] {"action", "destroy", String.valueOf(id), cardName}, player);
     }
   }
@@ -500,7 +492,7 @@ public class App {
   public void characterSelection()
   {
     // rotate the crowned player to the first index in the list
-    while (!players.get(0).hasCrown()){
+    while (players.get(0).getId() != crownOwnerId){
       Player p = players.get(0);
       players.remove(0);
       players.add(p);

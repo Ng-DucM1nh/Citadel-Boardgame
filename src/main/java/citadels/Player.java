@@ -12,7 +12,6 @@ public class Player
   private Character character;
   private int gold;
   private int id;
-  private boolean crown;
   private ArrayList<Card> cards;
   private ArrayList<Card> placedCards;
   private boolean killed;
@@ -25,7 +24,6 @@ public class Player
     character = null;
     gold = 0;
     this.id = id;
-    crown = false;
     cards = new ArrayList<>();
     placedCards = new ArrayList<>();
     killed = false;
@@ -39,16 +37,6 @@ public class Player
     return id;
   }
 
-  public boolean hasCrown()
-  {
-    return crown;
-  }
-
-  public void setCrown(boolean crown)
-  {
-    this.crown = crown;
-  }
-
   public void takeCard(Card card)
   {
     if (card == null) return;
@@ -60,7 +48,6 @@ public class Player
     return placedCards.size();
   }
 
-//TODO
   public Card findPlacedCardByName(String cardName)
   {
     for (Card c : placedCards){
@@ -301,7 +288,12 @@ public class Player
       pos--;
     }
     takeCard(deck.getCard(pos));
-    System.out.printf("Player %d chose card %s\n", id, deck.getCard(pos).display());
+    if (id == 1){
+      System.out.printf("Player %d chose card %s\n", id, deck.getCard(pos).display());
+    }
+    else{
+      System.out.printf("Player %d picked a card\n", id);
+    }
     deck.removeCard(pos);
     deck.shuffle();
   }
@@ -446,7 +438,6 @@ public class Player
     obj.put("character",character.toJSON());
     obj.put("gold",gold);
     obj.put("id",id);
-    obj.put("crown",crown);
     obj.put("killed",killed);
     obj.put("robbed",robbed);
     if (robber == null){
