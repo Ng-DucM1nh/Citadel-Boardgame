@@ -22,12 +22,13 @@ public class Magician extends Character
   {
     if (tokens.length != 3) return false;
     if (tokens[1].equals("swap") == false && tokens[1].equals("redraw") == false) return false;
+    boolean human = (player.getId() == 1);
     if (player.isKilled()){
-      System.out.println("You can't use the character's ability after being assassinated");
+      if (human) System.out.println("You can't use the character's ability after being assassinated");
       return true;
     }
     if (numAction <= 0){
-      System.out.println("You can no longer use the character's ability for this round.");
+      if (human) System.out.println("You can no longer use the character's ability for this round.");
       return true;
     }
     ArrayList<Player> players = app.getPlayers();
@@ -37,11 +38,11 @@ public class Magician extends Character
         id = Integer.parseInt(tokens[2]);
       }
       catch (Exception e){
-        System.out.println("Invalid player number");
+        if (human) System.out.println("Invalid player number");
         return true;
       }
       if (id < 1 || id > players.size()){
-        System.out.println("Invalid player number");
+        if (human) System.out.println("Invalid player number");
         return true;
       }
       id--;
@@ -63,11 +64,11 @@ public class Magician extends Character
           npos = Integer.parseInt(p);
         }
         catch (Exception e){
-          System.out.println("Invalid card position");
+          if (human) System.out.println("Invalid card position");
           return true;
         }
         if (npos < 1 || npos > cards.size()){
-          System.out.println("Invalid card position");
+          if (human) System.out.println("Invalid card position");
           return true;
         }
         pos.add(npos-1);

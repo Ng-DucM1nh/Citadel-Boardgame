@@ -382,25 +382,69 @@ public class App {
     System.out.println("action : Gives info about your special action and how to perform it\nend : Ends your turn");
   }
 
-  public void actionCommand(String[] tokens)
+  public void actionCommand(String[] tokens, Player player)
   {
     if (tokens.length == 1){
       System.out.println(humanPlayer.getActionList());
       return;
     }
-    humanPlayer.action(this, tokens);
+    player.action(this, tokens);
+  }
+
+  public void botBuild(Player player)
+  {
+    Random rand = new Random(System.currentTimeMillis());
+    int numTry = player.getNumCards();
+    while (player.getCharacter().getNumBuild() > 0 && numTry-- > 0){
+      int pos = rand.nextInt(player.getNumCards())+1;
+      buildCommand(new String[] {"build", String.valueOf(pos)}, player);
+    }
+  }
+
+  public void botAction(Player player)
+  {
+    String charName = player.getCharacter().getName();
+    if (charName.equals("Magician") == false && charName.equals("Warlord") == false) return;
+    Random rand = new Random(System.currentTimeMillis());
+    if (charName.equals("Magician")){
+      int c = rand.nextInt(2);
+      if (c == 0) return;
+      c = rand.nextInt(2);
+      if (c == 0){
+        // swap hands
+        int id = -1;
+        while (id == -1 || id == player.getId()){
+          id = rand.nextInt(players.size()) + 1;
+        }
+        // System.out.printf("swap with random id %d\n", id);
+        actionCommand(new String[] {"action", "swap", String.valueOf(id)}, player);
+      }
+      else{
+        // redraw cards
+        int numRedraw = rand.nextInt(player.getNumCards())+1;
+        ArrayList<Integer> pos = new ArrayList<>();
+        for (int i=0; i<player.getNumCards(); i++){
+          pos.add(i+1);
+        }
+        Collections.shuffle(pos);
+        String spos = "";
+        for (int i=0; i<numRedraw; i++){
+          spos += String.valueOf(pos.get(i));
+          if (i < numRedraw-1) spos+=",";
+        }
+        // System.out.printf("redraw random pos %s\n", spos);
+        actionCommand(new String[] {"action", "redraw", spos}, player);
+      }
+      return;
+    }
   }
 
   public void prompt(Player player)
   {
     boolean inTurn = (player != null && player.getId() == 1);
     if (player != null && !inTurn){
-      Random rand = new Random(System.currentTimeMillis());
-      int numTry = player.getNumCards();
-      while (player.getCharacter().getNumBuild() > 0 && numTry-- > 0){
-        int pos = rand.nextInt(player.getNumCards())+1;
-        buildCommand(new String[] {"build", String.valueOf(pos)}, player);
-      }
+      botAction(player);
+      botBuild(player);
     }
     while (true){
       System.out.print(promptArrow);
@@ -438,7 +482,7 @@ public class App {
         helpCommand();
       }
       if (tokens[0].equals("action")){
-        actionCommand(tokens);
+        actionCommand(tokens, player);
       }
       if (command.equals("debug")){
         System.out.printf("Debug mode toggled\n");
@@ -668,7 +712,7 @@ public class App {
       if (player.isKilled()){
         if (player.hasPlacedDistrict("Hospital") == false){
           System.out.printf("Player %d loses their turn because they were assassinated.\n", player.getId());
-          prompt(player);
+          prompt(null);
           continue;
         }
         else{

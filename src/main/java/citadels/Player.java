@@ -223,7 +223,7 @@ public class Player
     Deck deck = app.getDeck();
     if (deck.size() == 0) return;
     int pos = -1;
-    System.out.printf("Lighthouse: Player %d may choose one card [%d..%d]\n", id, 1, deck.size());
+    System.out.printf("Lighthouse: Player %d may choose one card from deck [%d..%d]\n", id, 1, deck.size());
     if (id != 1){
       Random rand = new Random(System.currentTimeMillis());
       pos = rand.nextInt(deck.size());
