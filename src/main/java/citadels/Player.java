@@ -158,16 +158,17 @@ public class Player
 
   public void build(App app, int pos)
   {
+    boolean human = (id == 1);
     if (isKilled()){
-      System.out.printf("You can't build district cards after being assassinated\n");
+      if (human) System.out.printf("You can't build district cards after being assassinated\n");
       return;
     }
     if (pos < 0 || pos >= cards.size()){
-      System.out.println("Invalid card position");
+      if (human) System.out.println("Invalid card position");
       return;
     }
     if (character.getNumBuild() <= 0){
-      System.out.println("You can no longer build during this round.");
+      if (human) System.out.println("You can no longer build during this round.");
       return;
     }
     Card card = cards.get(pos);
@@ -177,7 +178,7 @@ public class Player
         duplicate |= (placedCards.get(c) > 1);
       }
       if (duplicate == true){
-        System.out.printf("This district is already built and player %d already have one duplicate district\n", id);
+        if (human) System.out.printf("This district is already built and player %d already have one duplicate district\n", id);
         return;
       }
       else if (placedCards.containsKey(card)){
@@ -185,7 +186,7 @@ public class Player
       }
     }
     else if (placedCards.containsKey(card)){
-      System.out.println("This building is already built");
+      if (human) System.out.println("This building is already built");
       return;
     }
     int cost = card.getCost();
@@ -194,7 +195,7 @@ public class Player
       System.out.printf("Factory: cost of building reduced by 1 to %d.\n", cost);
     }
     if (gold < cost){
-      System.out.println("You don't have enough gold.");
+      if (human) System.out.println("You don't have enough gold.");
       return;
     }
     character.decNumBuild();
@@ -207,7 +208,7 @@ public class Player
     }
     cards.remove(pos);
     card.setRoundBuilt(app.getRound());
-    System.out.printf("Built %s\n", card.display());
+    System.out.printf("Player %d built %s\n", id, card.display());
     if (card.getName().equals("Bell Tower")){
       app.setNumDistrictGoal(7);
     }

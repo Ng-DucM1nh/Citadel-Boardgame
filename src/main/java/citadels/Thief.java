@@ -18,7 +18,7 @@ public class Thief extends Character
     int c = -1;
     if (player.getId() == 1){
       Scanner scanner = app.getScanner();
-      System.out.println("Who do you want to rob? Choose a character from 3-8:");
+      System.out.print("Who do you want to rob? Choose a character from 3-8:\n> ");
       c = -1;
       while (true){
         try{

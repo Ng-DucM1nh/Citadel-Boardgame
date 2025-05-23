@@ -161,7 +161,7 @@ public class App {
         Card c = deck.pop();
         p.takeCard(c);
       }
-      p.addGold(2);
+      p.addGold(100);
       for (int i=0; i<3; i++){
         p.addPlacedCard(deck.pop());
       }
@@ -274,7 +274,7 @@ public class App {
     System.out.printf("Player %d has %d gold.\n", playerId, players.get(playerId-1).getGold());
   }
 
-  public void buildCommand(String[] tokens)
+  public void buildCommand(String[] tokens, Player player)
   {
     if (tokens.length != 2){
       System.out.println("Invalid parameter.\nExpected \"build <H>\"");
@@ -288,7 +288,7 @@ public class App {
       System.out.println("Invalid card position");
       return;
     }
-    humanPlayer.build(this, pos-1);
+    player.build(this, pos-1);
   }
 
   public void citadelCommand(String[] tokens)
@@ -387,8 +387,18 @@ public class App {
     humanPlayer.action(this, tokens);
   }
 
-  public void prompt(boolean inTurn)
+  public void prompt(Player player)
   {
+    boolean inTurn = (player != null && player.getId() == 1);
+    if (player != null && !inTurn){
+      Random rand = new Random(System.currentTimeMillis());
+      int numTry = player.getNumCards();
+      while (player.getCharacter().getNumBuild() > 0 && numTry-- > 0){
+        int pos = rand.nextInt(player.getNumCards())+1;
+        System.out.printf("random card %d\n", pos);
+        buildCommand(new String[] {"build", String.valueOf(pos)}, player);
+      }
+    }
     while (true){
       System.out.print(promptArrow);
       String command = scanner.nextLine();
@@ -404,7 +414,7 @@ public class App {
         goldCommand(tokens);
       }
       if (tokens[0].equals("build")){
-        if (inTurn) buildCommand(tokens);
+        if (inTurn) buildCommand(tokens, player);
       }
       if (command.equals("end")){
         if (inTurn){
@@ -446,7 +456,7 @@ public class App {
     System.out.printf("Player %d is the crowned player and goes first.\n", players.get(0).getId());
     System.out.println("Press t to process turns");
     System.out.println("================================\nSELECTION PHASE\n================================");
-    prompt(false);
+    prompt(null);
     // shuffle character cards and remove some cards
     Collections.shuffle(characters, new Random(System.currentTimeMillis()));
     Character facedownChar = characters.get(0);
@@ -477,7 +487,7 @@ public class App {
     // Character facedownChar = null; ////////////////////////////////////////////////////
     for (Player player : players){
       characters = chooseCharacter(player, characters, facedownChar);
-      prompt(false);
+      prompt(null);
     }
     addCharacters();
     while (players.get(0).getId() != 1){
@@ -648,14 +658,14 @@ public class App {
       boolean inTurn = false;
       if (player == null){
         System.out.printf("No one is the %s\n", character.getName());
-        prompt(false);
+        prompt(null);
         continue;
       }
       System.out.printf("Player %d is the %s\n", player.getId(), character.getName());
       if (player.isKilled()){
         if (player.hasPlacedDistrict("Hospital") == false){
           System.out.printf("Player %d loses their turn because they were assassinated.\n", player.getId());
-          prompt(false);
+          prompt(player);
           continue;
         }
         else{
@@ -699,9 +709,9 @@ public class App {
         System.out.println();
       }
       promptResource(player);
-      prompt(myTurn);
+      prompt(player);
       if (player.isCityCompleted(this)){
-        if (firstCompletePlayerId != -1) firstCompletePlayerId = player.getId();
+        if (firstCompletePlayerId == -1) firstCompletePlayerId = player.getId();
       }
       if (player.hasPlacedDistrict("Poor House") && player.getGold() == 0){
         player.addGold(1);
@@ -711,8 +721,6 @@ public class App {
         System.out.printf("Park: Player %d may draw 2 cards.\n", player.getId());
         drawPick(2, 2, player);
       }
-      player.resetCard();
-      player.resetPlayer();
     }
   }
 
@@ -758,6 +766,10 @@ public class App {
     }
     initialSetup();
     while(true){
+      for (Player p : players){
+        p.resetCard();
+        p.resetPlayer();
+      }
       round++;
       characterSelection();
       turn();

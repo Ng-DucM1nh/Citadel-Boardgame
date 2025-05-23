@@ -18,7 +18,7 @@ public class Assassin extends Character
     int c = -1;
     if (player.getId() == 1){
       Scanner scanner = app.getScanner();
-      System.out.println("Who do you want to kill? Choose a character from 2-8:");
+      System.out.print("Who do you want to kill? Choose a character from 2-8:\n> ");
       while (true){
         try{
           c = scanner.nextInt();
@@ -51,5 +51,6 @@ public class Assassin extends Character
     Player killedPlayer = app.findPlayerWithChar(name);
     if (killedPlayer == null) return;
     killedPlayer.setKilled(true);
+    System.out.printf("the killed player is player %d\n", app.findPlayerWithChar(name).getId());
   }
 }
