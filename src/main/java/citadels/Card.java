@@ -235,8 +235,8 @@ public class Card
       return;
     }
     Card targetCard = target.findPlacedCardByName(districtName);
-    player.removePlacedCard(app, this);
-    target.removePlacedCard(app, targetCard);
+    player.removePlacedCard(app, name);
+    target.removePlacedCard(app, targetCard.getName());
     System.out.printf("Player %d destroy their Armory to destroy player %d's %s\n", player.getId(), target.getId(), targetCard.display());
   }
 

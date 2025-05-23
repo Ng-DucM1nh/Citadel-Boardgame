@@ -14,7 +14,7 @@ public class Player
   private int id;
   private boolean crown;
   private ArrayList<Card> cards;
-  private HashMap<Card,Integer> placedCards;
+  private ArrayList<Card> placedCards;
   private boolean killed;
   private boolean robbed;
   private Player robber;
@@ -27,7 +27,7 @@ public class Player
     this.id = id;
     crown = false;
     cards = new ArrayList<>();
-    placedCards = new HashMap<>();
+    placedCards = new ArrayList<>();
     killed = false;
     robbed = false;
     robber = null;
@@ -60,13 +60,49 @@ public class Player
     return placedCards.size();
   }
 
+//TODO
   public Card findPlacedCardByName(String cardName)
   {
-    for (Card c : placedCards.keySet()){
+    for (Card c : placedCards){
       if (c.getName().equals(cardName) == false) continue;
       return c;
     }
     return null;
+  }
+
+  public Card findPlacedCardByPos(int pos)
+  {
+    if (pos < 0 || pos >= placedCards.size()) return null;
+    return placedCards.get(pos);
+  }
+
+  public void removePlacedCard(App app, String cardName)
+  {
+    if (hasPlacedDistrict(cardName) == false) return;
+    for (int i=0; i<placedCards.size(); i++){
+      if (placedCards.get(i).getName().equals(cardName) == false) continue;
+      placedCards.get(i).freeMuseum(app);
+      placedCards.remove(i);
+      break;
+    }
+  }
+
+  public void addPlacedCard(Card card)
+  {
+    placedCards.add(card);
+  }
+
+  public ArrayList<Card> getPlacedCards()
+  {
+    return placedCards;
+  }
+
+  public boolean hasPlacedDistrict(String districtName)
+  {
+    for (Card c : placedCards){
+      if (c.getName().equals(districtName)) return true;
+    }
+    return false;
   }
 
   public int getNumCards()
@@ -158,6 +194,13 @@ public class Player
     robbed = false; robber = null;
   }
 
+  public void showCity()
+  {
+    for (Card card : placedCards){
+      System.out.printf("%s (%s), points: %d\n", card.getName(), card.getColor(), card.getPoint());
+    }
+  }
+
   public void build(App app, int pos)
   {
     boolean human = (id == 1);
@@ -176,18 +219,26 @@ public class Player
     Card card = cards.get(pos);
     if (hasPlacedDistrict("Quarry")){
       boolean duplicate = false;
-      for (Card c : placedCards.keySet()){
-        duplicate |= (placedCards.get(c) > 1);
+      HashMap<String,Integer> cardCount = new HashMap<>();
+      for (Card c : placedCards){
+        String name = c.getName();
+        if (!cardCount.containsKey(name)){
+          cardCount.put(name, 1);
+        }
+        else{
+          cardCount.put(name, cardCount.get(name)+1);
+        }
+        duplicate |= (cardCount.get(name) > 1);
       }
       if (duplicate == true){
         if (human) System.out.printf("This district is already built and player %d already have one duplicate district\n", id);
         return;
       }
-      else if (placedCards.containsKey(card)){
+      else if (hasPlacedDistrict(card.getName())){
         System.out.printf("Quarry: player %d may have one duplicate district\n", id);
       }
     }
-    else if (placedCards.containsKey(card)){
+    else if (hasPlacedDistrict(card.getName())){
       if (human) System.out.println("This building is already built");
       return;
     }
@@ -202,12 +253,7 @@ public class Player
     }
     character.decNumBuild();
     gold -= cost;
-    if (placedCards.containsKey(card) == false){
-      placedCards.put(card, 1);
-    }
-    else{
-      placedCards.put(card, placedCards.get(card)+1);
-    }
+    placedCards.add(card);
     cards.remove(pos);
     card.setRoundBuilt(app.getRound());
     System.out.printf("Player %d built %s\n", id, card.display());
@@ -260,35 +306,6 @@ public class Player
     deck.shuffle();
   }
 
-  public void removePlacedCard(App app, Card card)
-  {
-    if (placedCards.containsKey(card) == false) return;
-    int cnt = placedCards.get(card);
-    card.freeMuseum(app);
-    placedCards.remove(card);
-    if (--cnt > 0){
-      placedCards.put(card, cnt);
-    }
-  }
-
-  public void addPlacedCard(Card card)
-  {
-    placedCards.put(card, 1);
-  }
-
-  public HashMap<Card,Integer> getPlacedCards()
-  {
-    return placedCards;
-  }
-
-  public boolean hasPlacedDistrict(String districtName)
-  {
-    for (Card c : placedCards.keySet()){
-      if (c.getName().equals(districtName)) return true;
-    }
-    return false;
-  }
-
   public boolean isCityCompleted(App app)
   {
     int numDistrictGoal = app.getNumDistrictGoal();
@@ -298,7 +315,7 @@ public class Player
   public int countPlacedCardColor(String color)
   {
     int cnt = 0;
-    for (Card c : placedCards.keySet()){
+    for (Card c : placedCards){
       if (c.getColor().equals(color)) cnt++;
     }
     return cnt;
@@ -306,7 +323,7 @@ public class Player
 
   public void resetCard()
   {
-    for (Card c : placedCards.keySet()){
+    for (Card c : placedCards){
       c.setUsed(false);
     }
   }
@@ -315,7 +332,7 @@ public class Player
   {
     String charAction = "character's action:\n" + character.actionDesc();
     String cardAction = "special cards' action:\n";
-    for (Card c : placedCards.keySet()){
+    for (Card c : placedCards){
       String s = c.actionDesc();
       if (s.equals("")) continue;
       cardAction += s + "\n";
@@ -326,7 +343,7 @@ public class Player
   public void action(App app, String[] tokens)
   {
     if (character.action(app, tokens, this)) return;
-    for (Card c : placedCards.keySet()){
+    for (Card c : placedCards){
       if (c.action(app, tokens, this)) return;
     }
     System.out.println("Invalid action.");
@@ -359,7 +376,7 @@ public class Player
     System.out.printf("Player %d's score :\n", id);
     int score = 0;
     HashMap<String,Integer> colorCount = new HashMap<>();
-    for (Card c : placedCards.keySet()){
+    for (Card c : placedCards){
       score += c.getPoint();
       System.out.printf("Scored %d points with %s district card.\n", c.getPoint(), c.display());
       String col = c.getColor();
@@ -444,9 +461,9 @@ public class Player
       cardsJson.add(c.toJSON());
     }
     obj.put("cards", cardsJson);
-    JSONObject placedCardsJson = new JSONObject();
-    for (Card c : placedCards.keySet()){
-      placedCardsJson.put(c.toJSON(), placedCards.get(c));
+    JSONArray placedCardsJson = new JSONArray();
+    for (Card c : placedCards){
+      placedCardsJson.add(c.toJSON());
     }
     obj.put("placedCards", placedCardsJson);
     return obj;

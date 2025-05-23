@@ -82,7 +82,7 @@ public class Warlord extends Character
       if (human) System.out.printf("You don't have enough gold.\n", player.getId());
       return true;
     }
-    target.removePlacedCard(app, targetCard);
+    target.removePlacedCard(app, targetCard.getName());
     player.addGold(-cost);
     numAction--;
     targetCard.destroy(app);

@@ -71,9 +71,8 @@ public class App {
       String color= tokens[2];
       int cost = Integer.parseInt(tokens[3]);
       String desc = (tokens.length == 4 ? "A normal card with no ability" : tokens[4]);
-      Card c = new Card(name, color, cost, cost, desc);
       while (qty-- > 0){
-        deck.addCard(c);
+        deck.addCard(new Card(name, color, cost, cost, desc));
       }
     }
   }
@@ -321,13 +320,7 @@ public class App {
     }
     Player player = players.get(playerId-1);
     System.out.printf("Player %d has built:\n", playerId);
-    HashMap<Card,Integer> placedCards = player.getPlacedCards();
-    for (Card card : placedCards.keySet()){
-      int num = placedCards.get(card);
-      while (num-- > 0){
-        System.out.printf("%s (%s), points: %d\n", card.getName(), card.getColor(), card.getPoint());
-      }
-    }
+    player.showCity();
   }
 
   public void allCommand()
@@ -335,8 +328,8 @@ public class App {
     for (int i=0; i<players.size(); i++){
       Player player = players.get(i);
       System.out.printf("Player %d%s: cards=%d gold=%d city=", player.getId(), (player.getId() == 1 ? " (you)" : ""), player.getNumCards(), player.getGold());
-      HashMap<Card,Integer> placedCards = player.getPlacedCards();
-      for (Card card : placedCards.keySet()){
+      ArrayList<Card> placedCards = player.getPlacedCards();
+      for (Card card : placedCards){
         System.out.print(card.display()+" ");
       }
       System.out.println();
@@ -446,13 +439,8 @@ public class App {
         id = rand.nextInt(players.size())+1;
       }
       Player target = players.get(id-1);
-      HashMap<Card,Integer> choices = target.getPlacedCards();
-      int pos = rand.nextInt(choices.size());
-      String cardName = "";
-      for (Card card : choices.keySet()){
-        if (pos-- > 0) continue;
-        cardName = card.getName().replace(' ','_');
-      }
+      int pos = rand.nextInt(player.getNumPlacedCards());
+      String cardName = player.findPlacedCardByPos(pos).getName().replace(' ','_');
       actionCommand(new String[] {"action", "destroy", String.valueOf(id), cardName}, player);
     }
   }
@@ -511,7 +499,6 @@ public class App {
 
   public void characterSelection()
   {
-    // System.out.println("**characterSelection called**");
     // rotate the crowned player to the first index in the list
     while (!players.get(0).hasCrown()){
       Player p = players.get(0);
@@ -795,6 +782,7 @@ public class App {
     int winnerId = -1;
     for (Player p : players){
       p.scoreCalculation(this);
+      System.out.println();
       if (maxScore < p.getScore()){
         maxScore = p.getScore();
         maxScoreCount = 1;
@@ -855,11 +843,10 @@ public class App {
       characterSelection();
       turn();
       save(humanPlayer, "slot1");
-      break;
-      // if (isGameOver()) break;
-      // System.out.println("Everyone is done, new round!");
+      if (isGameOver()) break;
+      System.out.println("Everyone is done, new round!");
     }
-    // endGame();
+    endGame();
   }
 
   public static void main(String[] args)
