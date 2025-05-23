@@ -437,6 +437,24 @@ public class App {
       }
       return;
     }
+    if (charName.equals("Warlord")){
+      int c = rand.nextInt(2);
+      c = 1;
+      if (c == 0) return;
+      int id = -1;
+      while (id == -1 || id == player.getId()){
+        id = rand.nextInt(players.size())+1;
+      }
+      Player target = players.get(id-1);
+      HashMap<Card,Integer> choices = target.getPlacedCards();
+      int pos = rand.nextInt(choices.size());
+      String cardName = "";
+      for (Card card : choices.keySet()){
+        if (pos-- > 0) continue;
+        cardName = card.getName().replace(' ','_');
+      }
+      actionCommand(new String[] {"action", "destroy", String.valueOf(id), cardName}, player);
+    }
   }
 
   public void prompt(Player player)

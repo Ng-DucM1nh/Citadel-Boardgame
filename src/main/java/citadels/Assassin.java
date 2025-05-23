@@ -51,6 +51,5 @@ public class Assassin extends Character
     Player killedPlayer = app.findPlayerWithChar(name);
     if (killedPlayer == null) return;
     killedPlayer.setKilled(true);
-    System.out.printf("the killed player is player %d\n", app.findPlayerWithChar(name).getId());
   }
 }
