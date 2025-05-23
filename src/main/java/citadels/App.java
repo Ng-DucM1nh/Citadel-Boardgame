@@ -60,11 +60,11 @@ public class App {
   public void getCardsData() throws FileNotFoundException
   {
     cardsFile = new File("src/main/resources/citadels/cards.tsv");
-    Scanner scanner = new Scanner(cardsFile); // this can possibly throw FileNotFoundException
+    Scanner fileScanner = new Scanner(cardsFile); // this can possibly throw FileNotFoundException
     deck = new Deck();
-    scanner.nextLine();
-    while (scanner.hasNextLine()){
-      String s = scanner.nextLine();
+    fileScanner.nextLine();
+    while (fileScanner.hasNextLine()){
+      String s = fileScanner.nextLine();
       String[] tokens = s.split("\t");
       String name = tokens[0];
       int qty = Integer.parseInt(tokens[1]);
@@ -817,6 +817,22 @@ public class App {
     System.out.printf("Congratulations, Player %d has won this game.\n", winnerId);
   }
 
+  public void save(Player player, String fileName)
+  {
+    fileName += ".json";
+    try{
+      File file = new File(fileName);
+      FileWriter writer = new FileWriter(fileName);
+      writer.write(player.toJSON().toString());
+      writer.close();
+    }
+    catch (Exception e){
+      System.out.printf("Error while creating file %s\n", fileName);
+      e.printStackTrace();
+      return;
+    }
+  }
+
 	public App()
   {
     scanner = new Scanner(System.in);
@@ -838,15 +854,18 @@ public class App {
       round++;
       characterSelection();
       turn();
-      if (isGameOver()) break;
-      System.out.println("Everyone is done, new round!");
+      save(humanPlayer, "slot1");
+      break;
+      // if (isGameOver()) break;
+      // System.out.println("Everyone is done, new round!");
     }
-    endGame();
+    // endGame();
   }
 
   public static void main(String[] args)
   {
     App app = new App();
+    // testJson.main(new String[] {});
   }
 
 }

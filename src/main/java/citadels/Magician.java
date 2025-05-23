@@ -5,8 +5,6 @@ import java.util.Collections;
 
 public class Magician extends Character
 {
-  private int numAction = 1;
-
   public Magician()
   {
     name = "Magician";

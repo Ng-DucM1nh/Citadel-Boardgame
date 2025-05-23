@@ -4,8 +4,6 @@ import java.util.ArrayList;
 
 public class Warlord extends Character
 {
-  private int numAction = 1; 
-
   public Warlord()
   {
     name = "Warlord";

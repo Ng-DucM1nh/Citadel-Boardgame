@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Scanner;
 import java.util.HashSet;
 import java.util.Random;
+import org.json.simple.*;
 
 public class Player
 {
@@ -420,6 +421,35 @@ public class Player
     }
     System.out.printf("Total score: %d.\n", score);
     this.score = score;
+  }
+
+  public JSONObject toJSON()
+  {
+    JSONObject obj = new JSONObject();
+    obj.put("character",character.toJSON());
+    obj.put("gold",gold);
+    obj.put("id",id);
+    obj.put("crown",crown);
+    obj.put("killed",killed);
+    obj.put("robbed",robbed);
+    if (robber == null){
+      obj.put("robber",null);
+    }
+    else{
+      obj.put("robber",robber.toJSON());
+    }
+    obj.put("score",score);
+    JSONArray cardsJson = new JSONArray();
+    for (Card c : cards){
+      cardsJson.add(c.toJSON());
+    }
+    obj.put("cards", cardsJson);
+    JSONObject placedCardsJson = new JSONObject();
+    for (Card c : placedCards.keySet()){
+      placedCardsJson.put(c.toJSON(), placedCards.get(c));
+    }
+    obj.put("placedCards", placedCardsJson);
+    return obj;
   }
 
   public String disp()

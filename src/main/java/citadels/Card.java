@@ -2,6 +2,7 @@ package citadels;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import org.json.simple.*;
 
 public class Card
 {
@@ -279,5 +280,24 @@ public class Card
   public String disp()
   {
     return name+" "+color+" "+String.valueOf(cost)+" "+String.valueOf(point)+" "+description;
+  }
+
+  public JSONObject toJSON()
+  {
+    JSONObject obj = new JSONObject();
+    obj.put("name", name);
+    obj.put("color",color);
+    obj.put("cost",cost);
+    obj.put("destroyCost",destroyCost);
+    obj.put("point",point);
+    obj.put("description",description);
+    obj.put("roundBuilt",roundBuilt);
+    obj.put("used",used);
+    JSONArray museumjson = new JSONArray();
+    for (Card c : this.museum){
+      museumjson.add(c.toJSON());
+    }
+    obj.put("museum", museumjson);
+    return obj;
   }
 }
