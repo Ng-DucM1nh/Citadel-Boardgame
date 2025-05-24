@@ -24,6 +24,8 @@ public class App {
   private int round = 1;
   private boolean debugMode = false;
   private String phase = "";
+  private int numDistrictGoal = 8;
+  private boolean loadCalled = false;
 
   public Scanner getScanner()
   {
@@ -168,8 +170,6 @@ public class App {
     System.out.println("You are player 1");
     phase = "charSelect";
   }
-
-  private int numDistrictGoal = 8;
 
   public int getNumDistrictGoal()
   {
@@ -450,6 +450,16 @@ public class App {
     save(tokens[1]);
   }
 
+  public void loadCommand(String[] tokens)
+  {
+    if (tokens.length != 2){
+      System.out.println("Invalid arguments");
+      return;
+    }
+    loadCalled = true;
+    load(tokens[1]);
+  }
+
   public void prompt(Player player)
   {
     boolean inTurn = (player != null && player.getId() == 1);
@@ -502,6 +512,10 @@ public class App {
       if (tokens[0].equals("save")){
         saveCommand(tokens);
       }
+      if (tokens[0].equals("load")){
+        loadCommand(tokens);
+        if (loadCalled) return;
+      }
     }
   }
 
@@ -517,6 +531,7 @@ public class App {
     System.out.println("Press t to process turns");
     System.out.println("================================\nSELECTION PHASE\n================================");
     prompt(null);
+    if (loadCalled) return;
     // shuffle character cards and remove some cards
     Collections.shuffle(characters, new Random(System.currentTimeMillis()));
     Character facedownChar = characters.get(0);
@@ -548,6 +563,7 @@ public class App {
     for (Player player : players){
       characters = chooseCharacter(player, characters, facedownChar);
       prompt(null);
+      if (loadCalled) return;
     }
     addCharacters();
     while (players.get(0).getId() != 1){
@@ -725,6 +741,7 @@ public class App {
       if (player == null){
         System.out.printf("No one is the %s\n", character.getName());
         prompt(null);
+        if (loadCalled) return;
         continue;
       }
       System.out.printf("Player %d is the %s\n", player.getId(), character.getName());
@@ -732,6 +749,7 @@ public class App {
         if (player.hasPlacedDistrict("Hospital") == false){
           System.out.printf("Player %d loses their turn because they were assassinated.\n", player.getId());
           prompt(null);
+          if (loadCalled) return;
           continue;
         }
         else{
@@ -776,6 +794,7 @@ public class App {
       }
       promptResource(player);
       prompt(player);
+      if (loadCalled) return;
       if (player.isCityCompleted(this)){
         if (firstCompletePlayerId == -1) firstCompletePlayerId = player.getId();
       }
@@ -846,6 +865,7 @@ public class App {
     obj.put("round", round);
     obj.put("debugMode", debugMode );
     obj.put("phase", phase);
+    obj.put("numDistrictGoal", numDistrictGoal);
     JSONArray charactersJson = new JSONArray();
     for (Character c : characters){
       charactersJson.add(c.toJSON());
@@ -877,6 +897,7 @@ public class App {
 
     JSONObject obj = (JSONObject) JSONValue.parse(jsonCode);
     crownOwnerId = ((Long)obj.get("crownOwnerId")).intValue();
+    numDistrictGoal = ((Long)obj.get("numDistrictGoal")).intValue();
     deck = new Deck((JSONArray)obj.get("deck"));
     firstCompletePlayerId = ((Long)obj.get("firstCompletePlayerId")).intValue();
     round = ((Long)obj.get("round")).intValue();
@@ -958,7 +979,6 @@ public class App {
       return;
     }
     initialSetup();
-    load("slot1");
     while(true){
       for (Player p : players){
         p.resetCard();
@@ -966,6 +986,10 @@ public class App {
       }
       if (phase.equals("charSelect")) characterSelection();
       if (phase.equals("turn")) turn();
+      if (loadCalled){
+        loadCalled = false;
+        continue;
+      }
       // break;
       if (isGameOver()) break;
       System.out.println("Everyone is done, new round!");
