@@ -5,14 +5,24 @@ import java.util.Collections;
 
 import org.json.simple.*;
 
+/**
+ * The Magician character class, a specific role in Citadels.
+ * Implements unique behavior for magician.
+ */
 public class Magician extends Character
 {
+/**
+ * Magician method defines magician's special skill.
+ */
   public Magician()
   {
     name = "Magician";
     description = "Can either exchange their hand with another player's, or discard any number of district cards face down to the bottom of the deck and draw an equal number of cards from the district deck (can only do this once per turn).";
   }
 
+/**
+ * Magician method defines magician's special skill.
+ */
   public Magician(JSONObject obj)
   {
     name = (String)obj.get("name");
@@ -21,11 +31,17 @@ public class Magician extends Character
     numAction = ((Long)obj.get("numAction")).intValue();
   }
 
+/**
+ * actionDesc method defines magician's special skill.
+ */
   public String actionDesc()
   {
     return "action swap <player number>\naction redraw <id1,id2,...>\n";
   }
 
+/**
+ * action method defines magician's special skill.
+ */
   public boolean action(App app, String[] tokens, Player player)
   {
     if (tokens.length != 3) return false;

@@ -2,8 +2,15 @@ package citadels;
 
 import org.json.simple.*;
 
+/**
+ * The Architect character class, a specific role in Citadels.
+ * Implements unique behavior for architect.
+ */
 public class Architect extends Character
 {
+/**
+ * Architect method defines architect's special skill.
+ */
   public Architect()
   {
     name = "Architect";
@@ -11,6 +18,9 @@ public class Architect extends Character
     numBuild = 3;
   }
 
+/**
+ * Architect method defines architect's special skill.
+ */
   public Architect(JSONObject obj)
   {
     name = (String)obj.get("name");
@@ -19,6 +29,9 @@ public class Architect extends Character
     numAction = ((Long)obj.get("numAction")).intValue();
   }
 
+/**
+ * passiveSkill method defines architect's special skill.
+ */
   public void passiveSkill(App app, Player player)
   {
     Deck deck = app.getDeck();

@@ -7,6 +7,10 @@ import java.util.HashSet;
 import java.util.Random;
 import org.json.simple.*;
 
+/**
+ * Represents a player in the Citadels game.
+ * Manages the player's hand, gold, built districts, and interactions.
+ */
 public class Player
 {
   private Character character;
@@ -19,6 +23,9 @@ public class Player
   private Player robber;
   private int score;
 
+/**
+ * Player method for player-specific operations.
+ */
   public Player(int id)
   {
     character = null;
@@ -32,6 +39,9 @@ public class Player
     score = 0;
   }
 
+/**
+ * Player method for player-specific operations.
+ */
   public Player(JSONObject obj)
   {
     JSONObject characterJson = (JSONObject)obj.get("character");
@@ -94,6 +104,9 @@ public class Player
     return id;
   }
 
+/**
+ * takeCard method for player-specific operations.
+ */
   public void takeCard(Card card)
   {
     if (card == null) return;
@@ -105,6 +118,9 @@ public class Player
     return placedCards.size();
   }
 
+/**
+ * findPlacedCardByName method for player-specific operations.
+ */
   public Card findPlacedCardByName(String cardName)
   {
     for (Card c : placedCards){
@@ -114,12 +130,18 @@ public class Player
     return null;
   }
 
+/**
+ * findPlacedCardByPos method for player-specific operations.
+ */
   public Card findPlacedCardByPos(int pos)
   {
     if (pos < 0 || pos >= placedCards.size()) return null;
     return placedCards.get(pos);
   }
 
+/**
+ * removePlacedCard method for player-specific operations.
+ */
   public void removePlacedCard(App app, String cardName)
   {
     if (hasPlacedDistrict(cardName) == false) return;
@@ -131,6 +153,9 @@ public class Player
     }
   }
 
+/**
+ * addPlacedCard method for player-specific operations.
+ */
   public void addPlacedCard(Card card)
   {
     placedCards.add(card);
@@ -141,6 +166,9 @@ public class Player
     return placedCards;
   }
 
+/**
+ * hasPlacedDistrict method for player-specific operations.
+ */
   public boolean hasPlacedDistrict(String districtName)
   {
     for (Card c : placedCards){
@@ -170,6 +198,9 @@ public class Player
     return cards.get(pos);
   }
 
+/**
+ * removeCardAtPos method for player-specific operations.
+ */
   public void removeCardAtPos(int pos)
   {
     if (pos < 0 || pos >= cards.size()) return;
@@ -191,11 +222,17 @@ public class Player
     return gold;
   }
 
+/**
+ * addGold method for player-specific operations.
+ */
   public void addGold(int a)
   {
     gold += a;
   }
 
+/**
+ * isKilled method for player-specific operations.
+ */
   public boolean isKilled()
   {
     return killed;
@@ -206,6 +243,9 @@ public class Player
     this.killed = killed;
   }
 
+/**
+ * isRobbed method for player-specific operations.
+ */
   public boolean isRobbed()
   {
     return robbed;
@@ -238,6 +278,9 @@ public class Player
     robbed = false; robber = null;
   }
 
+/**
+ * showCity method for player-specific operations.
+ */
   public void showCity()
   {
     for (Card card : placedCards){
@@ -245,6 +288,9 @@ public class Player
     }
   }
 
+/**
+ * build method for player-specific operations.
+ */
   public void build(App app, int pos)
   {
     boolean human = (id == 1);
@@ -309,6 +355,9 @@ public class Player
     }
   }
 
+/**
+ * lighthouse method for player-specific operations.
+ */
   public void lighthouse(App app)
   {
     Deck deck = app.getDeck();
@@ -355,12 +404,18 @@ public class Player
     deck.shuffle();
   }
 
+/**
+ * isCityCompleted method for player-specific operations.
+ */
   public boolean isCityCompleted(App app)
   {
     int numDistrictGoal = app.getNumDistrictGoal();
     return (placedCards.size() >= numDistrictGoal);
   }
 
+/**
+ * countPlacedCardColor method for player-specific operations.
+ */
   public int countPlacedCardColor(String color)
   {
     int cnt = 0;
@@ -389,6 +444,9 @@ public class Player
     return charAction+"\n"+cardAction;
   }
 
+/**
+ * action method for player-specific operations.
+ */
   public void action(App app, String[] tokens)
   {
     if (character.action(app, tokens, this)) return;
@@ -398,6 +456,9 @@ public class Player
     System.out.println("Invalid action.");
   }
 
+/**
+ * promptGraveyard method for player-specific operations.
+ */
   public boolean promptGraveyard(App app, Card destroyedCard)
   {
     if (getGold() < 1) return false;
@@ -420,6 +481,9 @@ public class Player
     return false;
   }
 
+/**
+ * scoreCalculation method for player-specific operations.
+ */
   public void scoreCalculation(App app)
   {
     System.out.printf("Player %d's score :\n", id);
@@ -489,6 +553,9 @@ public class Player
     this.score = score;
   }
 
+/**
+ * toJSON method for player-specific operations.
+ */
   public JSONObject toJSON()
   {
     JSONObject obj = new JSONObject();
@@ -522,10 +589,16 @@ public class Player
     return obj;
   }
 
+/**
+ * disp method for player-specific operations.
+ */
   public String disp()
   {
     return "player"+String.valueOf(id);
   }
+/**
+ * showCard method for player-specific operations.
+ */
   public void showCard()
   {
     for (Card c : cards){

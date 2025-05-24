@@ -4,14 +4,24 @@ import java.util.ArrayList;
 
 import org.json.simple.*;
 
+/**
+ * The Warlord character class, a specific role in Citadels.
+ * Implements unique behavior for warlord.
+ */
 public class Warlord extends Character
 {
+/**
+ * Warlord method defines warlord's special skill.
+ */
   public Warlord()
   {
     name = "Warlord";
     description = "Gains one gold for each red (military) district in their city. You can destroy one district of your choice by paying one fewer gold than its building cost. You cannot destroy a district in a city with 8 or more districts.";
   }
 
+/**
+ * Warlord method defines warlord's special skill.
+ */
   public Warlord(JSONObject obj)
   {
     name = (String)obj.get("name");
@@ -20,6 +30,9 @@ public class Warlord extends Character
     numAction = ((Long)obj.get("numAction")).intValue();
   }
 
+/**
+ * passiveSkill method defines warlord's special skill.
+ */
   public void passiveSkill(App app, Player player)
   {
     int gold = player.countPlacedCardColor("red");
@@ -27,11 +40,17 @@ public class Warlord extends Character
     System.out.printf("Player %d receives %d gold from their signature district color.\n", player.getId(), gold);
   }
 
+/**
+ * actionDesc method defines warlord's special skill.
+ */
   public String actionDesc()
   {
     return "action destroy <playerId> <District_Name_Seperated_By_Underscore>\n";
   }
 
+/**
+ * action method defines warlord's special skill.
+ */
   public boolean action(App app, String[] tokens, Player player)
   {
     if (tokens.length != 4) return false;

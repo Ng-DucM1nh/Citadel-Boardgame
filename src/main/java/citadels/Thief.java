@@ -6,14 +6,24 @@ import java.util.Random;
 
 import org.json.simple.*;
 
+/**
+ * The Thief character class, a specific role in Citadels.
+ * Implements unique behavior for thief.
+ */
 public class Thief extends Character
 {
+/**
+ * Thief method defines thief's special skill.
+ */
   public Thief()
   {
     name = "Thief";
     description = "Select another character whom you wish to rob. When a player reveals that character to take his turn, you immediately take all of his gold. You cannot rob the Assassin or the killed character.";
   }
 
+/**
+ * Thief method defines thief's special skill.
+ */
   public Thief(JSONObject obj)
   {
     name = (String)obj.get("name");
@@ -22,6 +32,9 @@ public class Thief extends Character
     numAction = ((Long)obj.get("numAction")).intValue();
   }
 
+/**
+ * promptSkill method defines thief's special skill.
+ */
   public void promptSkill(App app, Player player)
   {
     ArrayList<Character> characters = app.getCharacters();
@@ -57,6 +70,9 @@ public class Thief extends Character
     System.out.printf("Player %d chose to rob the %s\n", player.getId(), name);
   }
 
+/**
+ * rob method defines thief's special skill.
+ */
   public void rob(App app, String name, Player robber)
   {
     Player robbedPlayer = app.findPlayerWithChar(name);

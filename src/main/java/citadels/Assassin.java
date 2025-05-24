@@ -6,14 +6,24 @@ import java.util.Random;
 
 import org.json.simple.*;
 
+/**
+ * The Assassin character class, a specific role in Citadels.
+ * Implements unique behavior for assassin.
+ */
 public class Assassin extends Character
 {
+/**
+ * Assassin method defines assassin's special skill.
+ */
   public Assassin()
   {
     name = "Assassin";
     description = "Select another character whom you wish to kill. The killed character loses their turn.";
   }
 
+/**
+ * Assassin method defines assassin's special skill.
+ */
   public Assassin(JSONObject obj)
   {
     name = (String)obj.get("name");
@@ -22,6 +32,9 @@ public class Assassin extends Character
     numAction = ((Long)obj.get("numAction")).intValue();
   }
 
+/**
+ * promptSkill method defines assassin's special skill.
+ */
   public void promptSkill(App app, Player player)
   {
     ArrayList<Character> characters = app.getCharacters();
@@ -56,6 +69,9 @@ public class Assassin extends Character
     System.out.printf("Player %d chose to kill the %s\n", player.getId(), name);
   }
 
+/**
+ * kill method defines assassin's special skill.
+ */
   public void kill(App app, String name)
   {
     Player killedPlayer = app.findPlayerWithChar(name);

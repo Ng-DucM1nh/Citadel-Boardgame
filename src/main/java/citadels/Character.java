@@ -5,6 +5,10 @@ import java.util.ArrayList;
 
 import org.json.simple.*;
 
+/**
+ * Represents a character card in the Citadels game.
+ * Character cards define roles and abilities per round.
+ */
 public class Character
 {
   String name;
@@ -12,6 +16,9 @@ public class Character
   int numBuild = 1;
   int numAction = 1;
 
+/**
+ * desc method for character-specific logic.
+ */
   public void desc()
   {
     System.out.printf("%s: %s\n", name, description);
@@ -22,6 +29,9 @@ public class Character
     return name;
   }
 
+/**
+ * promptSkill method for character-specific logic.
+ */
   public void promptSkill(App app, Player player){}
 
   public int getNumBuild()
@@ -29,17 +39,32 @@ public class Character
     return numBuild;
   }
 
+/**
+ * decNumBuild method for character-specific logic.
+ */
   public void decNumBuild()
   {
     numBuild--;
   }
 
+/**
+ * passiveSkill method for character-specific logic.
+ */
   public void passiveSkill(App app, Player player){}
 
+/**
+ * actionDesc method for character-specific logic.
+ */
   public String actionDesc() {return "";}
 
+/**
+ * action method for character-specific logic.
+ */
   public boolean action(App app, String[] tokens, Player player) {return false;}
 
+/**
+ * toJSON method for character-specific logic.
+ */
   public JSONObject toJSON()
   {
     JSONObject obj = new JSONObject();

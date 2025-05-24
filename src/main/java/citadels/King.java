@@ -2,14 +2,24 @@ package citadels;
 
 import org.json.simple.*;
 
+/**
+ * The King character class, a specific role in Citadels.
+ * Implements unique behavior for king.
+ */
 public class King extends Character
 {
+/**
+ * King method defines king's special skill.
+ */
   public King()
   {
     name = "King";
     description = "Gains one gold for each yellow (noble) district in their city. They receive the crown token and will be the first to choose characters on the next round.";
   }
 
+/**
+ * King method defines king's special skill.
+ */
   public King(JSONObject obj)
   {
     name = (String)obj.get("name");
@@ -18,6 +28,9 @@ public class King extends Character
     numAction = ((Long)obj.get("numAction")).intValue();
   }
 
+/**
+ * passiveSkill method defines king's special skill.
+ */
   public void passiveSkill(App app, Player player)
   {
     int gold = player.countPlacedCardColor("yellow");

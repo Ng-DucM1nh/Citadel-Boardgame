@@ -10,6 +10,10 @@ import java.util.*;
 
 import org.json.simple.*;
 
+/**
+ * Main application logic for running the Citadels game.
+ * Handles game initialization, turn processing, and saving/loading.
+ */
 public class App {
   static final String promptArrow = "> ";
 
@@ -58,17 +62,22 @@ public class App {
     return round;
   }
 
+/**
+ * toggleDebug method for game application logic.
+ */
   public void toggleDebug()
   {
+    // Toggle debug mode on/off
     debugMode = !debugMode;
   }
 
   public void getCardsData() throws FileNotFoundException
   {
+    // Load card data from TSV file
     cardsFile = new File("src/main/resources/citadels/cards.tsv");
     Scanner fileScanner = new Scanner(cardsFile); // this can possibly throw FileNotFoundException
     deck = new Deck();
-    fileScanner.nextLine();
+    fileScanner.nextLine(); // Skip header
     while (fileScanner.hasNextLine()){
       String s = fileScanner.nextLine();
       String[] tokens = s.split("\t");
@@ -77,6 +86,7 @@ public class App {
       String color= tokens[2];
       int cost = Integer.parseInt(tokens[3]);
       String desc = (tokens.length == 4 ? "A normal card with no ability" : tokens[4]);
+      // Add each card to the deck according to its quantity
       while (qty-- > 0){
         deck.addCard(new Card(name, color, cost, cost, desc));
       }
@@ -86,9 +96,11 @@ public class App {
 
   public void assignCrown(int crownPlayerId)
   {
+    // Validate crownPlayerId
     if (crownPlayerId < 1 || crownPlayerId > players.size()){
       throw new RuntimeException("invalid crownPlayerId");
     }
+    // Check for Throne Room bonus
     for (Player p : players){
       if (p.hasPlacedDistrict("Throne Room") == false) continue;
       if (crownOwnerId != crownPlayerId){
@@ -102,6 +114,7 @@ public class App {
 
   public void addCharacters()
   {
+    // Reset and add all character cards
     characters.clear();
     characters.add(new Assassin());
     characters.add(new Thief());
@@ -115,11 +128,11 @@ public class App {
 
   public void initialSetup()
   {
+    // Initialize player list and game state
     players = new ArrayList<>();
     crownOwnerId = -1;
     characters = new ArrayList<>();
-    // prompt for the number of players
-    
+    // Prompt for number of players
     System.out.print("Enter how many players [4-7]:\n> ");
     int numPlayers = -1;
     try{
@@ -134,22 +147,22 @@ public class App {
       System.out.println("Invalid number of players");
       System.exit(1);
     }
-    // add players object to list
+    // Add Player objects to list
     for (int id=1; id<=numPlayers; id++){
       Player p = new Player(id);
       players.add(p);
     }
-    // randomly pick a player to assign the crown to
+    // Randomly assign crown
     Random rand = new Random(System.currentTimeMillis());
     int crownPlayerId = rand.nextInt(numPlayers) + 1;
     assignCrown(crownPlayerId);
-    // shuffle deck
+    // Shuffle deck
     System.out.println("Shuffling deck...");
     deck.shuffle();
-    // add character cards
+    // Add character cards
     System.out.println("Adding characters...");
     addCharacters();
-    // deal cards to players
+    // Deal starting gold and cards to players
     System.out.println("Dealing cards...");
     for (Player p : players){
       p.addGold(2);
@@ -174,23 +187,33 @@ public class App {
     System.out.printf("A completed city must have at least %d districts.\n", numDistrictGoal);
   }
 
+/**
+ * isGameOver method for game application logic.
+ */
   public boolean isGameOver()
   {
     int districtGoal = 8;
+    // Check if any player has Bell Tower, which reduces the goal
     for (Player p : players){
       if (p.hasPlacedDistrict("Bell Tower")) districtGoal = 7;
     }
     setNumDistrictGoal(districtGoal);
+    // Check if any player has completed their city
     for (Player p : players){
       if (p.isCityCompleted(this)) return true;
     }
     return false;
   }
   
+/**
+ * chooseCharacter method for game application logic.
+ */
   public ArrayList<Character> chooseCharacter(Player player, ArrayList<Character> charList, Character facedownChar)
   {
+    // Special rule for 7 players: add facedown character back if only one left
     if (players.size() == 7 && charList.size() == 1) charList.add(facedownChar);
     if (player.getId() == 1){
+      // Human player chooses character
       int l = 1, r = charList.size();
       System.out.printf("Choose a character from the list [%d..%d]:\n", l, r);
       for (int i=0; i<charList.size(); i++){
@@ -220,7 +243,7 @@ public class App {
       }
     }
     else{
-      // bot
+      // Bot chooses randomly
       Random rand = new Random(System.currentTimeMillis());
       int id = rand.nextInt(charList.size());
       player.setCharacter(charList.get(id));
@@ -230,8 +253,12 @@ public class App {
     return charList;
   }
 
+/**
+ * handCommand method for game application logic.
+ */
   public void handCommand()
   {
+    // Show cards in hand and gold for player 1
     System.out.printf("You have %d gold. Cards in hand:\n", players.get(0).getGold());
     ArrayList<Card> cards = players.get(0).getCards();
     for (int i=0; i<cards.size(); i++){
@@ -239,8 +266,12 @@ public class App {
     }
   }
 
+/**
+ * goldCommand method for game application logic.
+ */
   public void goldCommand(String[] tokens)
   {
+    // Show gold for player 1 or a specific player
     if (tokens.length > 2){
       System.out.println("Invalid parameter.");
       System.out.println("Expected \"gold [p]\".");
@@ -265,8 +296,12 @@ public class App {
     System.out.printf("Player %d has %d gold.\n", playerId, players.get(playerId-1).getGold());
   }
 
+/**
+ * buildCommand method for game application logic.
+ */
   public void buildCommand(String[] tokens, Player player)
   {
+    // Build a district from hand
     if (tokens.length != 2){
       System.out.println("Invalid parameter.\nExpected \"build <H>\"");
       return;
@@ -282,8 +317,12 @@ public class App {
     player.build(this, pos-1);
   }
 
+/**
+ * citadelCommand method for game application logic.
+ */
   public void citadelCommand(String[] tokens)
   {
+    // Show built districts for a player
     if (tokens.length > 2){
       System.out.println("Invalid parameter");
       System.out.println("Expected \"citadel|list|city [p]\"");
@@ -311,8 +350,12 @@ public class App {
     player.showCity();
   }
 
+/**
+ * allCommand method for game application logic.
+ */
   public void allCommand()
   {
+    // Show summary info for all players
     for (int i=0; i<players.size(); i++){
       Player player = players.get(i);
       System.out.printf("Player %d%s: cards=%d gold=%d city=", player.getId(), (player.getId() == 1 ? " (you)" : ""), player.getNumCards(), player.getGold());
@@ -324,8 +367,12 @@ public class App {
     }
   }
 
+/**
+ * infoCommand method for game application logic.
+ */
   public void infoCommand(String[] tokens)
   {
+    // Show info about a character or card
     if (tokens.length != 2){
       System.out.println("Invalid parameter.");
       System.out.println("Expected \"info <H>\" or \"info <name>\"");
@@ -354,8 +401,12 @@ public class App {
     System.out.printf("%s: %s\n", card.getName(), card.getDesc());
   }
 
+/**
+ * helpCommand method for game application logic.
+ */
   public void helpCommand()
   {
+    // Print help for available commands
     System.out.println("Available commands:\ninfo : show information about a character or building\nt : processes turns\n");
     System.out.println("all : shows all current game info\ncitadel/list/city : shows districts built by a player");
     System.out.println("hand : shows cards in hand\ngold [p] : shows gold of a player\n");
@@ -363,8 +414,12 @@ public class App {
     System.out.println("action : Gives info about your special action and how to perform it\nend : Ends your turn");
   }
 
+/**
+ * actionCommand method for game application logic.
+ */
   public void actionCommand(String[] tokens, Player player)
   {
+    // Handle special action command for player
     if (tokens.length == 1){
       System.out.println(players.get(0).getActionList());
       return;
@@ -372,8 +427,12 @@ public class App {
     player.action(this, tokens);
   }
 
+/**
+ * botBuild method for game application logic.
+ */
   public void botBuild(Player player)
   {
+    // Bot attempts to build as many districts as allowed
     if (player.getNumCards() == 0) return;
     Random rand = new Random(System.currentTimeMillis());
     int numTry = player.getNumCards();
@@ -383,8 +442,12 @@ public class App {
     }
   }
 
+/**
+ * botAction method for game application logic.
+ */
   public void botAction(Player player)
   {
+    // Bot performs special actions for Magician or Warlord
     String charName = player.getCharacter().getName();
     if (charName.equals("Magician") == false && charName.equals("Warlord") == false) return;
     Random rand = new Random(System.currentTimeMillis());
@@ -432,8 +495,12 @@ public class App {
     }
   }
 
+/**
+ * saveCommand method for game application logic.
+ */
   public void saveCommand(String[] tokens)
   {
+    // Save game state to file
     if (tokens.length != 2){
       System.out.println("Invalid arguments");
       return;
@@ -441,8 +508,12 @@ public class App {
     save(tokens[1]);
   }
 
+/**
+ * loadCommand method for game application logic.
+ */
   public void loadCommand(String[] tokens)
   {
+    // Load game state from file
     if (tokens.length != 2){
       System.out.println("Invalid arguments");
       return;
@@ -451,8 +522,12 @@ public class App {
     load(tokens[1]);
   }
 
+/**
+ * prompt method for game application logic.
+ */
   public void prompt(Player player)
   {
+    // Main command prompt for player or bot
     boolean inTurn = (player != null && player.getId() == 1);
     if (player != null && !inTurn){
       botAction(player);
@@ -509,9 +584,12 @@ public class App {
     }
   }
 
+/**
+ * characterSelection method for game application logic.
+ */
   public void characterSelection()
   {
-    // rotate the crowned player to the first index in the list
+    // Rotate crowned player to first index
     while (players.get(0).getId() != crownOwnerId){
       Player p = players.get(0);
       players.remove(0);
@@ -522,7 +600,7 @@ public class App {
     System.out.println("================================\nSELECTION PHASE\n================================");
     prompt(null);
     if (loadCalled) return;
-    // shuffle character cards and remove some cards
+    // Shuffle character cards and remove some for selection phase
     if (currentTurnPlayerId == -1){
       Collections.shuffle(characters, new Random(System.currentTimeMillis()));
       facedownChar = characters.get(0);
@@ -566,6 +644,7 @@ public class App {
       currentTurnPlayerId = -1;
     }
     addCharacters();
+    // Rotate player 1 back to first index
     while (players.get(0).getId() != 1){
       Player p = players.get(0);
       players.remove(0);
@@ -576,6 +655,7 @@ public class App {
 
   public Player findPlayerWithChar(String charName)
   {
+    // Find player with a specific character
     for (Player p : players){
       if (p.getCharacter().getName().equals(charName)) return p;
     }
@@ -584,9 +664,11 @@ public class App {
 
   public void promptResource(Player player)
   {
+    // Prompt player to collect gold or draw cards
     boolean human = (player.getId() == 1);
     String res = "";
     int numDraw = 2, numPick = 1;
+    // Check for Observatory and Library bonuses
     if (player.hasPlacedDistrict("Observatory")){
       numDraw = 3;
       System.out.printf("Observatory: Player %d may draw %d cards and keep 1.\n", player.getId(), 3);
@@ -596,6 +678,7 @@ public class App {
       System.out.printf("Library: Player %d may keep %d cards.\n", player.getId(), numPick);
     }
     if (!human){
+      // Bot chooses randomly
       Random rand = new Random(System.currentTimeMillis());
       while (true){
         int choice = rand.nextInt(2);
@@ -627,14 +710,19 @@ public class App {
     }
   }
 
+/**
+ * drawPick method for game application logic.
+ */
   public boolean drawPick(int numDraw, int numPick, Player player)
   {
+    // Handle drawing and picking cards for player
     boolean human = (player.getId() == 1);
     if (deck.size() == 0){
       if (human) System.out.println("deck empty");
       return false;
     }
     if (!human){
+      // Bot picks cards automatically
       numPick = Math.min(numPick, numDraw);
       numPick = Math.min(numPick, deck.size());
       for (int i=0; i<numPick; i++){
@@ -657,11 +745,13 @@ public class App {
     }
     ArrayList<Integer> pos = new ArrayList<>();
     if (numPick == numDraw){
+      // If picking all drawn cards
       for (int i=0; i<numPick; i++){
         pos.add(i);
       }
     }
     else{
+      // Prompt user to pick specific cards
       while (true){
         pos.clear();
         System.out.print(promptArrow);
@@ -719,14 +809,19 @@ public class App {
     return true;
   }
 
+/**
+ * turn method for game application logic.
+ */
   public void turn()
   {
+    // Main turn phase: process each character in order
     System.out.println("Character choosing is over, action round will now begin.");
     System.out.println("================================\nTURN PHASE\n================================");
     for (int i=0; i<8; i++){
       Character character = characters.get(i);
       System.out.printf("%d. %s\n", i+1, character.getName());
       Player player = null;
+      // Find player with this character
       for (Player p : players){
         if (!p.getCharacter().getName().equals(character.getName())) continue;
         player = p;
@@ -741,6 +836,7 @@ public class App {
       }
       boolean inTurn = false;
       if (player == null){
+        // No one has this character
         System.out.printf("No one is the %s\n", character.getName());
         prompt(null);
         if (loadCalled) return;
@@ -749,6 +845,7 @@ public class App {
       }
       System.out.printf("Player %d is the %s\n", player.getId(), character.getName());
       if (player.isKilled()){
+        // Handle assassination
         if (player.hasPlacedDistrict("Hospital") == false){
           System.out.printf("Player %d loses their turn because they were assassinated.\n", player.getId());
           prompt(null);
@@ -761,6 +858,7 @@ public class App {
         }
       }
       if (player.isRobbed() && !player.isKilled()){
+        // Handle robbery
         System.out.printf("The Thief steals %d gold from the %s.\n", player.getGold(), character.getName());
         int gold = player.getGold();
         Player robber = player.getRobber();
@@ -770,6 +868,7 @@ public class App {
       boolean myTurn = (player.getId() == 1);
       if (myTurn) System.out.println("Your turn.");
       if (player.hasPlacedDistrict("School Of Magic")){
+        // School of Magic color adapts for income
         Card card = player.findPlacedCardByName("School Of Magic");
         String targetCol = "purple";
         if (character.getName().equals("Warlord")){
@@ -790,6 +889,7 @@ public class App {
       if (!player.isKilled()) character.promptSkill(this, player);
       if (!player.isKilled()) character.passiveSkill(this, player);
       if (!myTurn && debugMode){
+        // Show bot hand in debug mode
         System.out.printf("Debug: Player %d's hand: ", player.getId());
         for (int j=0; j<player.getNumCards(); j++){
           System.out.printf("%s ", player.getCardAtPos(j).display());
@@ -805,10 +905,12 @@ public class App {
         if (firstCompletePlayerId == -1) firstCompletePlayerId = player.getId();
       }
       if (player.hasPlacedDistrict("Poor House") && player.getGold() == 0){
+        // Poor House bonus
         player.addGold(1);
         System.out.printf("Poor House: Player %d received 1 gold.\n", player.getId());
       }
       if (player.hasPlacedDistrict("Park") && player.getNumCards() == 0){
+        // Park bonus
         System.out.printf("Park: Player %d may draw 2 cards.\n", player.getId());
         drawPick(2, 2, player);
       }
@@ -817,8 +919,12 @@ public class App {
     phase = "charSelect";
   }
 
+/**
+ * endGame method for game application logic.
+ */
   public void endGame()
   {
+    // Calculate scores and determine winner
     int maxScore = -1, maxScoreCount = 0;
     int winnerId = -1;
     for (Player p : players){
@@ -834,6 +940,7 @@ public class App {
       }
     }
     if (maxScoreCount > 1){
+      // Tie-breaker: highest rank character in last round
       for (int i=0; i<8; i++){
         Player player = findPlayerWithChar(characters.get(i).getName());
         if (player == null) continue;
@@ -846,8 +953,12 @@ public class App {
     System.out.printf("Congratulations, Player %d has won this game.\n", winnerId);
   }
 
+/**
+ * save method for game application logic.
+ */
   public void save(String fileName)
   {
+    // Save game state to JSON file
     fileName += ".json";
     try{
       File file = new File(fileName);
@@ -863,8 +974,12 @@ public class App {
     System.out.printf("Saved game state to %s\n", fileName);
   }
 
+/**
+ * toJSON method for game application logic.
+ */
   public JSONObject toJSON()
   {
+    // Convert game state to JSON object
     JSONObject obj = new JSONObject();
     obj.put("crownOwnerId", crownOwnerId);
     obj.put("deck", deck.toJSON());
@@ -888,8 +1003,12 @@ public class App {
     return obj;
   }
 
+/**
+ * load method for game application logic.
+ */
   public void load(String fileName)
   {
+    // Load game state from JSON file
     fileName += ".json";
     String jsonCode = "";
     try{
@@ -939,8 +1058,12 @@ public class App {
     System.out.printf("Load from %s successfully\n", fileName);
   }
 
+/**
+ * App method for game application logic.
+ */
 	public App()
   {
+    // Main application constructor: setup and run game loop
     scanner = new Scanner(System.in);
     try{
       getCardsData();
@@ -952,6 +1075,7 @@ public class App {
     }
     initialSetup();
     while(true){
+      // Reset all players for new round
       for (Player p : players){
         p.resetCard();
         p.resetPlayer();
@@ -973,8 +1097,12 @@ public class App {
     endGame();
   }
 
+/**
+ * main method for game application logic.
+ */
   public static void main(String[] args)
   {
+    // Entry point: start the game
     App app = new App();
   }
 

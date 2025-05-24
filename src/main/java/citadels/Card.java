@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import org.json.simple.*;
 
+/**
+ * Base class representing a generic card in the Citadels game.
+ */
 public class Card
 {
   private String name;
@@ -16,6 +19,9 @@ public class Card
   private boolean used;
   ArrayList<Card> museum;
 
+/**
+ * Card method for card-specific behavior.
+ */
   public Card(String name, String color, int cost, int point, String description)
   {
     this.name = name;
@@ -33,6 +39,9 @@ public class Card
     }
   }
 
+/**
+ * Card method for card-specific behavior.
+ */
   public Card(JSONObject obj)
   {
     name = (String)obj.get("name");
@@ -105,6 +114,9 @@ public class Card
     return museum.size();
   }
 
+/**
+ * freeMuseum method for card-specific behavior.
+ */
   public void freeMuseum(App app)
   {
     Deck deck = app.getDeck();
@@ -113,6 +125,9 @@ public class Card
     }
   }
 
+/**
+ * display method for card-specific behavior.
+ */
   public String display()
   {
     String inf = name+" ["+color+String.valueOf(cost)+"]";
@@ -126,6 +141,9 @@ public class Card
     return inf;
   }
 
+/**
+ * actionDesc method for card-specific behavior.
+ */
   public String actionDesc()
   {
     if (name.equals("Laboratory")){
@@ -143,6 +161,9 @@ public class Card
     return "";
   }
 
+/**
+ * action method for card-specific behavior.
+ */
   public boolean action(App app, String[] tokens, Player player)
   {
     if (tokens[1].equals(name) && name.equals("Laboratory")){
@@ -164,6 +185,9 @@ public class Card
     return false;
   }
 
+/**
+ * actionLaboratory method for card-specific behavior.
+ */
   public void actionLaboratory(App app, String[] tokens, Player player)
   {
     if (tokens.length != 3){
@@ -196,6 +220,9 @@ public class Card
     System.out.printf("Player %d discard card %s for 1 gold\n", player.getId(), card.display());
   }
 
+/**
+ * actionSmithy method for card-specific behavior.
+ */
   public void actionSmithy(App app, String[] tokens, Player player)
   {
     if (tokens.length != 2){
@@ -220,6 +247,9 @@ public class Card
     setUsed(true);
   }
 
+/**
+ * actionArmory method for card-specific behavior.
+ */
   public void actionArmory(App app, String[] tokens, Player player)
   {
     if (tokens.length != 4){
@@ -257,6 +287,9 @@ public class Card
     System.out.printf("Player %d destroy their Armory to destroy player %d's %s\n", player.getId(), target.getId(), targetCard.display());
   }
 
+/**
+ * actionMuseum method for card-specific behavior.
+ */
   public void actionMuseum(App app, String[] tokens, Player player)
   {
     if (tokens.length != 3){
@@ -287,6 +320,9 @@ public class Card
     System.out.printf("Player %d puts card %s under their Museum\n", player.getId(), card.display());
   }
 
+/**
+ * destroy method for card-specific behavior.
+ */
   public void destroy(App app)
   {
     if (name.equals("Bell Tower")){
@@ -294,11 +330,17 @@ public class Card
     }
   }
 
+/**
+ * disp method for card-specific behavior.
+ */
   public String disp()
   {
     return name+" "+color+" "+String.valueOf(cost)+" "+String.valueOf(point)+" "+description;
   }
 
+/**
+ * toJSON method for card-specific behavior.
+ */
   public JSONObject toJSON()
   {
     JSONObject obj = new JSONObject();

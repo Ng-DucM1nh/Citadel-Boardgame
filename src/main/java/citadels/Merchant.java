@@ -2,14 +2,24 @@ package citadels;
 
 import org.json.simple.*;
 
+/**
+ * The Merchant character class, a specific role in Citadels.
+ * Implements unique behavior for merchant.
+ */
 public class Merchant extends Character
 {
+/**
+ * Merchant method defines merchant's special skill.
+ */
   public Merchant()
   {
     name = "Merchant";
     description = "Gains one gold for each green (trade) district in their city. Gains one extra gold.";
   }
 
+/**
+ * Merchant method defines merchant's special skill.
+ */
   public Merchant(JSONObject obj)
   {
     name = (String)obj.get("name");
@@ -18,6 +28,9 @@ public class Merchant extends Character
     numAction = ((Long)obj.get("numAction")).intValue();
   }
 
+/**
+ * passiveSkill method defines merchant's special skill.
+ */
   public void passiveSkill(App app, Player player)
   {
     System.out.printf("Player %d receives 1 extra gold.\n", player.getId());
