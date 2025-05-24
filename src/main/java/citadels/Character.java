@@ -49,4 +49,34 @@ public class Character
     obj.put("numAction",numAction);
     return obj;
   }
+
+  public static Character getCharFromJsonObj(JSONObject charJson)
+  {
+    String name = (String)charJson.get("name");
+    if (name.equals("Assassin")){
+      return new Assassin(charJson);
+    }
+    if (name.equals("Thief")){
+      return new Thief(charJson);
+    }
+    if (name.equals("Magician")){
+      return new Magician(charJson);
+    }
+    if (name.equals("King")){
+      return new King(charJson);
+    }
+    if (name.equals("Bishop")){
+      return new Bishop(charJson);
+    }
+    if (name.equals("Merchant")){
+      return new Merchant(charJson);
+    }
+    if (name.equals("Architect")){
+      return new Architect(charJson);
+    }
+    if (name.equals("Warlord")){
+      return new Warlord(charJson);
+    }
+    return null;
+  }
 }

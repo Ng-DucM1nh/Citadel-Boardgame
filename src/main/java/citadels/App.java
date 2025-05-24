@@ -19,13 +19,14 @@ public class App {
   private Deck deck;
   private ArrayList<Character> characters;
   private Scanner scanner;
-  private Player humanPlayer;
   private int firstCompletePlayerId = -1;
   private int round = 1;
   private boolean debugMode = false;
   private String phase = "";
   private int numDistrictGoal = 8;
   private boolean loadCalled = false;
+  private int currentTurnPlayerId = -1;
+  private Character facedownChar;
 
   public Scanner getScanner()
   {
@@ -138,12 +139,10 @@ public class App {
       Player p = new Player(id);
       players.add(p);
     }
-    humanPlayer = players.get(0);
     // randomly pick a player to assign the crown to
     Random rand = new Random(System.currentTimeMillis());
     int crownPlayerId = rand.nextInt(numPlayers) + 1;
     assignCrown(crownPlayerId);
-    // assignCrown(1); ///////////////////////////////////////////////////
     // shuffle deck
     System.out.println("Shuffling deck...");
     deck.shuffle();
@@ -153,14 +152,7 @@ public class App {
     // deal cards to players
     System.out.println("Dealing cards...");
     for (Player p : players){
-      p.addGold(100);
-      // for (int i=0; i<3; i++){
-      //   p.addPlacedCard(deck.pop());
-      // }
-      // if (p.getId() == 2){
-      //   p.takeCard(new Card("Lighthouse", "purple", 0, 0, ""));
-      //   continue;
-      // }
+      p.addGold(2);
       for (int i=0; i<4; i++){
         Card c = deck.pop();
         p.takeCard(c);
@@ -240,8 +232,8 @@ public class App {
 
   public void handCommand()
   {
-    System.out.printf("You have %d gold. Cards in hand:\n", humanPlayer.getGold());
-    ArrayList<Card> cards = humanPlayer.getCards();
+    System.out.printf("You have %d gold. Cards in hand:\n", players.get(0).getGold());
+    ArrayList<Card> cards = players.get(0).getCards();
     for (int i=0; i<cards.size(); i++){
       System.out.printf("%d. %s (%s), cost: %d\n", i+1, cards.get(i).getName(), cards.get(i).getColor(), cards.get(i).getCost());
     }
@@ -255,7 +247,7 @@ public class App {
       return;
     }
     if (tokens.length == 1){
-      System.out.printf("You have %d gold.\n", humanPlayer.getGold());
+      System.out.printf("You have %d gold.\n", players.get(0).getGold());
       return;
     }
     int playerId = -1;
@@ -353,12 +345,12 @@ public class App {
       System.out.printf("No character named %s. Invalid card position %s\n", tokens[1], tokens[1]);
       return;
     }
-    int numCards = humanPlayer.getNumCards();
+    int numCards = players.get(0).getNumCards();
     if (pos < 1 || pos > numCards){
       System.out.printf("No character named %s. Invalid card position %s\n", tokens[1], tokens[1]);
       return;
     }
-    Card card = humanPlayer.getCardAtPos(pos-1);
+    Card card = players.get(0).getCardAtPos(pos-1);
     System.out.printf("%s: %s\n", card.getName(), card.getDesc());
   }
 
@@ -374,7 +366,7 @@ public class App {
   public void actionCommand(String[] tokens, Player player)
   {
     if (tokens.length == 1){
-      System.out.println(humanPlayer.getActionList());
+      System.out.println(players.get(0).getActionList());
       return;
     }
     player.action(this, tokens);
@@ -382,6 +374,7 @@ public class App {
 
   public void botBuild(Player player)
   {
+    if (player.getNumCards() == 0) return;
     Random rand = new Random(System.currentTimeMillis());
     int numTry = player.getNumCards();
     while (player.getCharacter().getNumBuild() > 0 && numTry-- > 0){
@@ -405,7 +398,6 @@ public class App {
         while (id == -1 || id == player.getId()){
           id = rand.nextInt(players.size()) + 1;
         }
-        // System.out.printf("swap with random id %d\n", id);
         actionCommand(new String[] {"action", "swap", String.valueOf(id)}, player);
       }
       else{
@@ -421,7 +413,6 @@ public class App {
           spos += String.valueOf(pos.get(i));
           if (i < numRedraw-1) spos+=",";
         }
-        // System.out.printf("redraw random pos %s\n", spos);
         actionCommand(new String[] {"action", "redraw", spos}, player);
       }
       return;
@@ -533,37 +524,47 @@ public class App {
     prompt(null);
     if (loadCalled) return;
     // shuffle character cards and remove some cards
-    Collections.shuffle(characters, new Random(System.currentTimeMillis()));
-    Character facedownChar = characters.get(0);
-    characters.remove(0);
-    System.out.println("A mystery character was removed.");
-    int faceups = -1;
-    switch(players.size()){
-      case 4:
-        faceups = 2;
-        break;
-      case 5:
-        faceups = 1;
-        break;
-      case 6:
-        faceups = 0;
-        break;
-      case 7:
-        faceups = 0;
-        break;
+    if (currentTurnPlayerId == -1){
+      Collections.shuffle(characters, new Random(System.currentTimeMillis()));
+      facedownChar = characters.get(0);
+      characters.remove(0);
+      System.out.println("A mystery character was removed.");
+      int faceups = -1;
+      switch(players.size()){
+        case 4:
+          faceups = 2;
+          break;
+        case 5:
+          faceups = 1;
+          break;
+        case 6:
+          faceups = 0;
+          break;
+        case 7:
+          faceups = 0;
+          break;
+      }
+      for (int i=characters.size()-1; i>=0 && faceups > 0; i--){
+        Character c = characters.get(i);
+        if (c.getName() == "King") continue;
+        System.out.printf("%s was removed.\n", c.getName());
+        characters.remove(i);
+        faceups--;
+      }
+
     }
-    for (int i=characters.size()-1; i>=0 && faceups > 0; i--){
-      Character c = characters.get(i);
-      if (c.getName() == "King") continue;
-      System.out.printf("%s was removed.\n", c.getName());
-      characters.remove(i);
-      faceups--;
-    }
-    // Character facedownChar = null; ////////////////////////////////////////////////////
     for (Player player : players){
+      if (currentTurnPlayerId != -1){
+        System.out.printf("cur turn player id%d\n", currentTurnPlayerId);
+        if (player.getId() != currentTurnPlayerId) continue;
+      }
+      else{
+        currentTurnPlayerId = player.getId();
+      }
       characters = chooseCharacter(player, characters, facedownChar);
       prompt(null);
       if (loadCalled) return;
+      currentTurnPlayerId = -1;
     }
     addCharacters();
     while (players.get(0).getId() != 1){
@@ -727,15 +728,16 @@ public class App {
       Character character = characters.get(i);
       System.out.printf("%d. %s\n", i+1, character.getName());
       Player player = null;
-      // System.out.print("moe "+(players == null)+"\n");
-      // for (Player p : players){
-      //   System.out.println(p.getCharacter() == null);
-      // }
       for (Player p : players){
-        // System.out.printf("db %s %s\n", p.getCharacter().getName(), character.getName());
         if (!p.getCharacter().getName().equals(character.getName())) continue;
         player = p;
         break;
+      }
+      if (currentTurnPlayerId != -1){
+        if (player == null || player.getId() != currentTurnPlayerId) continue;
+      }
+      else if (player != null){
+        currentTurnPlayerId = player.getId();
       }
       boolean inTurn = false;
       if (player == null){
@@ -794,7 +796,11 @@ public class App {
       }
       promptResource(player);
       prompt(player);
-      if (loadCalled) return;
+      System.out.printf("after prompt ^^\n");
+      if (loadCalled){
+        System.out.printf("nawr\n");
+        return;
+      }
       if (player.isCityCompleted(this)){
         if (firstCompletePlayerId == -1) firstCompletePlayerId = player.getId();
       }
@@ -806,8 +812,9 @@ public class App {
         System.out.printf("Park: Player %d may draw 2 cards.\n", player.getId());
         drawPick(2, 2, player);
       }
+      currentTurnPlayerId = -1;
+      System.out.printf("yo wat happened\n");
     }
-    // save("slot1");
     phase = "charSelect";
   }
 
@@ -858,6 +865,7 @@ public class App {
 
   public JSONObject toJSON()
   {
+    System.out.printf("dit currentTurnPlayerId %d\n",currentTurnPlayerId);
     JSONObject obj = new JSONObject();
     obj.put("crownOwnerId", crownOwnerId);
     obj.put("deck", deck.toJSON());
@@ -866,6 +874,8 @@ public class App {
     obj.put("debugMode", debugMode );
     obj.put("phase", phase);
     obj.put("numDistrictGoal", numDistrictGoal);
+    obj.put("currentTurnPlayerId", currentTurnPlayerId);
+    obj.put("facedownChar", facedownChar.toJSON());
     JSONArray charactersJson = new JSONArray();
     for (Character c : characters){
       charactersJson.add(c.toJSON());
@@ -898,6 +908,7 @@ public class App {
     JSONObject obj = (JSONObject) JSONValue.parse(jsonCode);
     crownOwnerId = ((Long)obj.get("crownOwnerId")).intValue();
     numDistrictGoal = ((Long)obj.get("numDistrictGoal")).intValue();
+    currentTurnPlayerId = ((Long)obj.get("currentTurnPlayerId")).intValue();
     deck = new Deck((JSONArray)obj.get("deck"));
     firstCompletePlayerId = ((Long)obj.get("firstCompletePlayerId")).intValue();
     round = ((Long)obj.get("round")).intValue();
@@ -905,37 +916,13 @@ public class App {
     phase = (String)obj.get("phase");
     characters = new ArrayList<>();
     JSONArray charactersJson = (JSONArray)obj.get("characters");
-    // System.out.printf("aint no way %s\n", charactersJson.toString());
     for (int i=0; i<charactersJson.size(); i++){
       JSONObject charJson = (JSONObject)charactersJson.get(i);
       String name = (String)charJson.get("name");
-      Character character = null;
-      if (name.equals("Assassin")){
-        character = new Assassin((JSONObject)charactersJson.get(i));
-      }
-      if (name.equals("Thief")){
-        character = new Thief((JSONObject)charactersJson.get(i));
-      }
-      if (name.equals("Magician")){
-        character = new Magician((JSONObject)charactersJson.get(i));
-      }
-      if (name.equals("King")){
-        character = new King((JSONObject)charactersJson.get(i));
-      }
-      if (name.equals("Bishop")){
-        character = new Bishop((JSONObject)charactersJson.get(i));
-      }
-      if (name.equals("Merchant")){
-        character = new Merchant((JSONObject)charactersJson.get(i));
-      }
-      if (name.equals("Architect")){
-        character = new Architect((JSONObject)charactersJson.get(i));
-      }
-      if (name.equals("Warlord")){
-        character = new Warlord((JSONObject)charactersJson.get(i));
-      }
+      Character character = Character.getCharFromJsonObj(charJson);
       characters.add(character);
     }
+    System.out.printf("characters dau r %d\n", characters.size());
     for (Character c : characters){
       if (c == null){
         System.out.println("null char");
@@ -949,21 +936,7 @@ public class App {
     for (int i=0; i<playersJson.size(); i++){
       players.add(new Player((JSONObject)playersJson.get(i)));
     }
-    // for (Player p : players){
-    //   if (p == null){
-    //     System.out.println("null");
-    //   }
-    //   else{
-    //     System.out.println(p.disp()+":");
-    //     if (p.getCharacter() == null){
-    //       System.out.println("null char");
-    //     }
-    //     else{
-    //       System.out.println(p.getCharacter().getName());
-    //     }
-    //   }
-    // }
-  
+    facedownChar = Character.getCharFromJsonObj((JSONObject)obj.get("facedownChar"));
     System.out.printf("Load from %s successfully\n", fileName);
   }
 
@@ -985,12 +958,15 @@ public class App {
         p.resetPlayer();
       }
       if (phase.equals("charSelect")) characterSelection();
+      if (loadCalled){
+        loadCalled = false;
+        continue;
+      }
       if (phase.equals("turn")) turn();
       if (loadCalled){
         loadCalled = false;
         continue;
       }
-      // break;
       if (isGameOver()) break;
       System.out.println("Everyone is done, new round!");
       round++;
@@ -1001,7 +977,6 @@ public class App {
   public static void main(String[] args)
   {
     App app = new App();
-    // testJson.main(new String[] {});
   }
 
 }
