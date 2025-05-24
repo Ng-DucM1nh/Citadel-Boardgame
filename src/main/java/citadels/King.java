@@ -13,6 +13,7 @@ public class King extends Character
  */
   public King()
   {
+    // Set King's name and description
     name = "King";
     description = "Gains one gold for each yellow (noble) district in their city. They receive the crown token and will be the first to choose characters on the next round.";
   }
@@ -22,6 +23,7 @@ public class King extends Character
  */
   public King(JSONObject obj)
   {
+    // Initialize King from JSON object
     name = (String)obj.get("name");
     description = (String)obj.get("description");
     numBuild = ((Long)obj.get("numBuild")).intValue();
@@ -33,6 +35,7 @@ public class King extends Character
  */
   public void passiveSkill(App app, Player player)
   {
+    // Add gold for each yellow district and assign crown
     int gold = player.countPlacedCardColor("yellow");
     player.addGold(gold);
     System.out.printf("Player %d receives %d gold from their signature district color.\n", player.getId(), gold);

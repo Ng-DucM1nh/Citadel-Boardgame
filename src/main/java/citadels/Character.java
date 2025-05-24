@@ -21,6 +21,7 @@ public class Character
  */
   public void desc()
   {
+    // Print character name and description
     System.out.printf("%s: %s\n", name, description);
   }
 
@@ -36,6 +37,7 @@ public class Character
 
   public int getNumBuild()
   {
+    // Return number of builds allowed
     return numBuild;
   }
 
@@ -44,6 +46,7 @@ public class Character
  */
   public void decNumBuild()
   {
+    // Decrement number of builds left
     numBuild--;
   }
 
@@ -67,6 +70,7 @@ public class Character
  */
   public JSONObject toJSON()
   {
+    // Convert character to JSON object
     JSONObject obj = new JSONObject();
     obj.put("name",name);
     obj.put("description",description);
@@ -77,6 +81,7 @@ public class Character
 
   public static Character getCharFromJsonObj(JSONObject charJson)
   {
+    // Return correct Character subclass based on name
     String name = (String)charJson.get("name");
     if (name.equals("Assassin")){
       return new Assassin(charJson);

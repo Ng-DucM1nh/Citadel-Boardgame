@@ -16,6 +16,7 @@ public class Magician extends Character
  */
   public Magician()
   {
+    // Set Magician's name and description
     name = "Magician";
     description = "Can either exchange their hand with another player's, or discard any number of district cards face down to the bottom of the deck and draw an equal number of cards from the district deck (can only do this once per turn).";
   }
@@ -25,6 +26,7 @@ public class Magician extends Character
  */
   public Magician(JSONObject obj)
   {
+    // Initialize Magician from JSON object
     name = (String)obj.get("name");
     description = (String)obj.get("description");
     numBuild = ((Long)obj.get("numBuild")).intValue();
@@ -36,6 +38,7 @@ public class Magician extends Character
  */
   public String actionDesc()
   {
+    // Return action command description for Magician
     return "action swap <player number>\naction redraw <id1,id2,...>\n";
   }
 
@@ -44,6 +47,7 @@ public class Magician extends Character
  */
   public boolean action(App app, String[] tokens, Player player)
   {
+    // Handle Magician's swap or redraw action
     if (tokens.length != 3) return false;
     if (tokens[1].equals("swap") == false && tokens[1].equals("redraw") == false) return false;
     boolean human = (player.getId() == 1);
@@ -57,6 +61,7 @@ public class Magician extends Character
     }
     ArrayList<Player> players = app.getPlayers();
     if (tokens[1].equals("swap")){
+      // Swap hands with another player
       int id = -1;
       try{
         id = Integer.parseInt(tokens[2]);
@@ -79,6 +84,7 @@ public class Magician extends Character
       return true;
     }
     else{
+      // Redraw selected cards
       String[] spos = tokens[2].split(",");
       ArrayList<Card> cards = player.getCards();
       ArrayList<Integer> pos = new ArrayList<>();

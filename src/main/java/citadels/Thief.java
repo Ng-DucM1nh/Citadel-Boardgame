@@ -17,6 +17,7 @@ public class Thief extends Character
  */
   public Thief()
   {
+    // Set Thief's name and description
     name = "Thief";
     description = "Select another character whom you wish to rob. When a player reveals that character to take his turn, you immediately take all of his gold. You cannot rob the Assassin or the killed character.";
   }
@@ -26,6 +27,7 @@ public class Thief extends Character
  */
   public Thief(JSONObject obj)
   {
+    // Initialize Thief from JSON object
     name = (String)obj.get("name");
     description = (String)obj.get("description");
     numBuild = ((Long)obj.get("numBuild")).intValue();
@@ -37,6 +39,7 @@ public class Thief extends Character
  */
   public void promptSkill(App app, Player player)
   {
+    // Prompt player to choose a character to rob
     ArrayList<Character> characters = app.getCharacters();
     int c = -1;
     if (player.getId() == 1){
@@ -61,6 +64,7 @@ public class Thief extends Character
       }
     }
     else{
+      // Bot chooses randomly
       Random rand = new Random(System.currentTimeMillis());
       c = rand.nextInt(6) + 3;
     }
@@ -75,6 +79,7 @@ public class Thief extends Character
  */
   public void rob(App app, String name, Player robber)
   {
+    // Set the robber for the chosen character
     Player robbedPlayer = app.findPlayerWithChar(name);
     if (robbedPlayer == null) return;
     robbedPlayer.setRobber(robber);

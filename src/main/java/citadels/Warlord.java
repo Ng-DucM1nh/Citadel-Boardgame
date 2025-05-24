@@ -15,6 +15,7 @@ public class Warlord extends Character
  */
   public Warlord()
   {
+    // Set Warlord's name and description
     name = "Warlord";
     description = "Gains one gold for each red (military) district in their city. You can destroy one district of your choice by paying one fewer gold than its building cost. You cannot destroy a district in a city with 8 or more districts.";
   }
@@ -24,6 +25,7 @@ public class Warlord extends Character
  */
   public Warlord(JSONObject obj)
   {
+    // Initialize Warlord from JSON object
     name = (String)obj.get("name");
     description = (String)obj.get("description");
     numBuild = ((Long)obj.get("numBuild")).intValue();
@@ -35,6 +37,7 @@ public class Warlord extends Character
  */
   public void passiveSkill(App app, Player player)
   {
+    // Add gold for each red district
     int gold = player.countPlacedCardColor("red");
     player.addGold(gold);
     System.out.printf("Player %d receives %d gold from their signature district color.\n", player.getId(), gold);
@@ -45,6 +48,7 @@ public class Warlord extends Character
  */
   public String actionDesc()
   {
+    // Return action command description for Warlord
     return "action destroy <playerId> <District_Name_Seperated_By_Underscore>\n";
   }
 
@@ -53,6 +57,7 @@ public class Warlord extends Character
  */
   public boolean action(App app, String[] tokens, Player player)
   {
+    // Handle Warlord's destroy action
     if (tokens.length != 4) return false;
     if (tokens[1].equals("destroy") == false) return false;
     boolean human = (player.getId() == 1);
@@ -79,14 +84,17 @@ public class Warlord extends Character
     }
     targetId--;
     Player target = players.get(targetId);
+    // Bishop's buildings are protected unless killed
     if (target.getCharacter().getName().equals("Bishop") && !target.isKilled()){
       if (human) System.out.printf("The Bishop's buildings cannot be destroyed by the Warlord, unless they are killed by the Assassin\n");
       return true;
     }
+    // Cannot destroy in completed city
     if (target.isCityCompleted(app)){
       if (human) System.out.println("You can't destroy a district in a completed city.");
       return true;
     }
+    // Parse district name from tokens
     String districtName = "";
     String[] districtNameTokens = tokens[3].split("_");
     for (int i=0; i<districtNameTokens.length; i++){

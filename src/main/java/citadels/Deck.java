@@ -19,6 +19,7 @@ public class Deck
  */
   public Deck()
   {
+    // Initialize empty deck
     cards = new ArrayList<>();
   }
 
@@ -27,6 +28,7 @@ public class Deck
  */
   public Deck(JSONArray arr)
   {
+    // Initialize deck from JSON array
     cards = new ArrayList<>();
     for (int i=0; i<arr.size(); i++){
       cards.add(new Card((JSONObject)arr.get(i)));
@@ -38,11 +40,13 @@ public class Deck
  */
   public void addCard(Card card)
   {
+    // Add card to deck
     cards.add(card);
   }
 
   public Card getCard(int pos)
   {
+    // Get card at position, or null if out of bounds
     if (pos < 0 || pos >= cards.size()) return null;
     return cards.get(pos);
   }
@@ -52,6 +56,7 @@ public class Deck
  */
   public void removeCard(int pos)
   {
+    // Remove card at position if valid
     if (pos < 0 || pos >= cards.size()) return;
     cards.remove(pos);
   }
@@ -61,6 +66,7 @@ public class Deck
  */
   public void shuffle()
   {
+    // Shuffle the deck
     Collections.shuffle(cards, new Random(System.currentTimeMillis()));
   }
 
@@ -69,6 +75,7 @@ public class Deck
  */
   public Card pop()
   {
+    // Remove and return the top card, or null if empty
     if (cards.size() == 0) return null;
     Card card = cards.get(0);
     cards.remove(0);
@@ -80,6 +87,7 @@ public class Deck
  */
   public int size()
   {
+    // Return number of cards in deck
     return cards.size();
   }
 
@@ -88,6 +96,7 @@ public class Deck
  */
   public JSONArray toJSON()
   {
+    // Convert deck to JSON array
     JSONArray arr = new JSONArray();
     for (Card c : cards){
       arr.add(c.toJSON());

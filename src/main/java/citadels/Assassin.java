@@ -17,6 +17,7 @@ public class Assassin extends Character
  */
   public Assassin()
   {
+    // Set Assassin's name and description
     name = "Assassin";
     description = "Select another character whom you wish to kill. The killed character loses their turn.";
   }
@@ -26,6 +27,7 @@ public class Assassin extends Character
  */
   public Assassin(JSONObject obj)
   {
+    // Initialize Assassin from JSON object
     name = (String)obj.get("name");
     description = (String)obj.get("description");
     numBuild = ((Long)obj.get("numBuild")).intValue();
@@ -37,6 +39,7 @@ public class Assassin extends Character
  */
   public void promptSkill(App app, Player player)
   {
+    // Prompt player to choose a character to kill
     ArrayList<Character> characters = app.getCharacters();
     int c = -1;
     if (player.getId() == 1){
@@ -60,6 +63,7 @@ public class Assassin extends Character
       }
     }
     else{
+      // Bot chooses randomly
       Random rand = new Random(System.currentTimeMillis());
       c = rand.nextInt(7) + 2;
     }
@@ -74,6 +78,7 @@ public class Assassin extends Character
  */
   public void kill(App app, String name)
   {
+    // Set killed flag for chosen character
     Player killedPlayer = app.findPlayerWithChar(name);
     if (killedPlayer == null) return;
     killedPlayer.setKilled(true);

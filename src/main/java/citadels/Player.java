@@ -28,6 +28,7 @@ public class Player
  */
   public Player(int id)
   {
+    // Initialize player with id, empty hand, and default state
     character = null;
     gold = 0;
     this.id = id;
@@ -44,11 +45,13 @@ public class Player
  */
   public Player(JSONObject obj)
   {
+    // Initialize player from JSON object
     JSONObject characterJson = (JSONObject)obj.get("character");
     if (characterJson == null){
       character = null;
     }
     else{
+      // Determine character type from name
       String name = (String)characterJson.get("name");
       if (name.equals("Assassin")){
         character = new Assassin(characterJson);
@@ -80,6 +83,7 @@ public class Player
       robber = null;
     }
     else{
+      // Recursively create robber player
       robber = new Player(robberJson);
     }
     gold = ((Long)obj.get("gold")).intValue();

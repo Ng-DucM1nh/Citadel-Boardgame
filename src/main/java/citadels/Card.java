@@ -24,6 +24,7 @@ public class Card
  */
   public Card(String name, String color, int cost, int point, String description)
   {
+    // Initialize card with properties
     this.name = name;
     this.color = color;
     this.cost = cost;
@@ -33,7 +34,7 @@ public class Card
     this.roundBuilt = -1;
     used = false;
     museum = new ArrayList<>();
-
+    // Special case for Dragon Gate and University
     if (name.equals("Dragon Gate") || name.equals("University")){
       this.point = 8;
     }
@@ -44,6 +45,7 @@ public class Card
  */
   public Card(JSONObject obj)
   {
+    // Initialize card from JSON object
     name = (String)obj.get("name");
     color = (String)obj.get("color");
     cost = ((Long)obj.get("cost")).intValue();

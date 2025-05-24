@@ -13,6 +13,7 @@ public class Architect extends Character
  */
   public Architect()
   {
+    // Set Architect's name, description, and build limit
     name = "Architect";
     description = "Gains two extra district cards. Can build up to 3 districts per turn.";
     numBuild = 3;
@@ -23,6 +24,7 @@ public class Architect extends Character
  */
   public Architect(JSONObject obj)
   {
+    // Initialize Architect from JSON object
     name = (String)obj.get("name");
     description = (String)obj.get("description");
     numBuild = ((Long)obj.get("numBuild")).intValue();
@@ -34,6 +36,7 @@ public class Architect extends Character
  */
   public void passiveSkill(App app, Player player)
   {
+    // Architect draws 2 extra cards
     Deck deck = app.getDeck();
     for (int j=0; j<2; j++){
       Card card = deck.pop();  
