@@ -4,12 +4,22 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.Random;
 
+import org.json.simple.*;
+
 public class Thief extends Character
 {
   public Thief()
   {
     name = "Thief";
     description = "Select another character whom you wish to rob. When a player reveals that character to take his turn, you immediately take all of his gold. You cannot rob the Assassin or the killed character.";
+  }
+
+  public Thief(JSONObject obj)
+  {
+    name = (String)obj.get("name");
+    description = (String)obj.get("description");
+    numBuild = ((Long)obj.get("numBuild")).intValue();
+    numAction = ((Long)obj.get("numAction")).intValue();
   }
 
   public void promptSkill(App app, Player player)

@@ -33,8 +33,27 @@ public class testJson
     // o2.put("eo",list);
     // System.out.println(o2.toString());
 
-    Card c = new Card("a", "red", 1, 7, "yeye");
-    JSONObject obj = c.toJSON();
-    System.out.println(obj.toString());
+    // Card c = new Card("a", "red", 1, 7, "yeye");
+    // JSONObject obj = c.toJSON();
+    // System.out.println(obj.toString());
+
+    JSONObject o1 = new JSONObject();
+    o1.put("ei","yo");
+    String s = o1.toString();
+    System.out.println(s);
+    String t = (String) o1.get("ei");
+    System.out.println(t);
+    JSONObject o2 = new JSONObject();
+    o2.put("num",7);
+    int x = (int) o2.get("num");
+    System.out.println(x);
+    JSONArray arr = new JSONArray();
+    arr.add(o1); arr.add(o2);
+    // for (JSONObject o : arr){
+    //   System.out.println(o.toString());
+    // }
+    o1.put("ei",o2);
+    JSONObject ei = (JSONObject)o1.get("ei");
+    System.out.println(ei == null);
   }
 }

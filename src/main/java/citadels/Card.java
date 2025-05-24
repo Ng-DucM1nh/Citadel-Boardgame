@@ -33,6 +33,23 @@ public class Card
     }
   }
 
+  public Card(JSONObject obj)
+  {
+    name = (String)obj.get("name");
+    color = (String)obj.get("color");
+    cost = ((Long)obj.get("cost")).intValue();
+    destroyCost = ((Long)obj.get("destroyCost")).intValue();
+    point = ((Long)obj.get("point")).intValue();
+    description = (String)obj.get("description");
+    roundBuilt = ((Long)obj.get("roundBuilt")).intValue();
+    used = (boolean)obj.get("used");
+    JSONArray museumJson = (JSONArray)obj.get("museum");
+    museum = new ArrayList<>();
+    for (int i=0; i<museumJson.size(); i++){
+      museum.add(new Card((JSONObject)museumJson.get(i)));
+    }
+  }
+
   public String getName()
   {
     return name;

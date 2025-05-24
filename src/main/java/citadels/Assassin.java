@@ -4,12 +4,22 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.Random;
 
+import org.json.simple.*;
+
 public class Assassin extends Character
 {
   public Assassin()
   {
     name = "Assassin";
     description = "Select another character whom you wish to kill. The killed character loses their turn.";
+  }
+
+  public Assassin(JSONObject obj)
+  {
+    name = (String)obj.get("name");
+    description = (String)obj.get("description");
+    numBuild = ((Long)obj.get("numBuild")).intValue();
+    numAction = ((Long)obj.get("numAction")).intValue();
   }
 
   public void promptSkill(App app, Player player)

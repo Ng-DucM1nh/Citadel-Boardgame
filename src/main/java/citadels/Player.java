@@ -32,6 +32,63 @@ public class Player
     score = 0;
   }
 
+  public Player(JSONObject obj)
+  {
+    JSONObject characterJson = (JSONObject)obj.get("character");
+    if (characterJson == null){
+      character = null;
+    }
+    else{
+      String name = (String)characterJson.get("name");
+      if (name.equals("Assassin")){
+        character = new Assassin(characterJson);
+      }
+      if (name.equals("Thief")){
+        character = new Thief(characterJson);
+      }
+      if (name.equals("Magician")){
+        character = new Magician(characterJson);
+      }
+      if (name.equals("King")){
+        character = new King(characterJson);
+      }
+      if (name.equals("Bishop")){
+        character = new Bishop(characterJson);
+      }
+      if (name.equals("Merchant")){
+        character = new Merchant(characterJson);
+      }
+      if (name.equals("Architect")){
+        character = new Architect(characterJson);
+      }
+      if (name.equals("Warlord")){
+        character = new Warlord(characterJson);
+      }
+    }
+    JSONObject robberJson = (JSONObject)obj.get("robber");
+    if (robberJson == null){
+      robber = null;
+    }
+    else{
+      robber = new Player(robberJson);
+    }
+    gold = ((Long)obj.get("gold")).intValue();
+    id = ((Long)obj.get("id")).intValue();
+    killed = (boolean)obj.get("killed");
+    robbed = (boolean)obj.get("robbed");
+    score = ((Long)obj.get("score")).intValue();
+    JSONArray cardsJson = (JSONArray)obj.get("cards");
+    cards = new ArrayList<>();
+    for (int i=0; i<cardsJson.size(); i++){
+      cards.add(new Card((JSONObject)cardsJson.get(i)));
+    }
+    JSONArray placedCardsJson = (JSONArray)obj.get("placedCards");
+    placedCards = new ArrayList<>();
+    for (int i=0; i<placedCardsJson.size(); i++){
+      placedCards.add(new Card((JSONObject)placedCardsJson.get(i)));
+    }
+  }
+
   public int getId()
   {
     return id;
@@ -435,7 +492,12 @@ public class Player
   public JSONObject toJSON()
   {
     JSONObject obj = new JSONObject();
-    obj.put("character",character.toJSON());
+    if (character == null){
+      obj.put("character", null);
+    }
+    else{
+      obj.put("character",character.toJSON());
+    }
     obj.put("gold",gold);
     obj.put("id",id);
     obj.put("killed",killed);

@@ -8,6 +8,8 @@ import java.nio.charset.StandardCharsets;
 import java.io.*;
 import java.util.*;
 
+import org.json.simple.*;
+
 public class App {
   static final String promptArrow = "> ";
 
@@ -19,8 +21,9 @@ public class App {
   private Scanner scanner;
   private Player humanPlayer;
   private int firstCompletePlayerId = -1;
-  private int round;
+  private int round = 1;
   private boolean debugMode = false;
+  private String phase = "";
 
   public Scanner getScanner()
   {
@@ -75,6 +78,7 @@ public class App {
         deck.addCard(new Card(name, color, cost, cost, desc));
       }
     }
+    fileScanner.close();
   }
 
   public void assignCrown(int crownPlayerId)
@@ -162,6 +166,7 @@ public class App {
     }
     System.out.printf("Starting Citadel with %d players...\n", numPlayers);
     System.out.println("You are player 1");
+    phase = "charSelect";
   }
 
   private int numDistrictGoal = 8;
@@ -432,9 +437,17 @@ public class App {
       if (target.getNumPlacedCards() == 0) return;
       int pos = rand.nextInt(target.getNumPlacedCards());
       String cardName = target.findPlacedCardByPos(pos).getName().replace(' ','_');
-      // System.out.printf("action destroy %d %s\n", id, cardName);
       actionCommand(new String[] {"action", "destroy", String.valueOf(id), cardName}, player);
     }
+  }
+
+  public void saveCommand(String[] tokens)
+  {
+    if (tokens.length != 2){
+      System.out.println("Invalid arguments");
+      return;
+    }
+    save(tokens[1]);
   }
 
   public void prompt(Player player)
@@ -485,6 +498,9 @@ public class App {
       if (command.equals("debug")){
         System.out.printf("Debug mode toggled\n");
         toggleDebug();
+      }
+      if (tokens[0].equals("save")){
+        saveCommand(tokens);
       }
     }
   }
@@ -539,6 +555,7 @@ public class App {
       players.remove(0);
       players.add(p);
     }
+    phase = "turn";
   }
 
   public Player findPlayerWithChar(String charName)
@@ -694,7 +711,12 @@ public class App {
       Character character = characters.get(i);
       System.out.printf("%d. %s\n", i+1, character.getName());
       Player player = null;
+      // System.out.print("moe "+(players == null)+"\n");
+      // for (Player p : players){
+      //   System.out.println(p.getCharacter() == null);
+      // }
       for (Player p : players){
+        // System.out.printf("db %s %s\n", p.getCharacter().getName(), character.getName());
         if (!p.getCharacter().getName().equals(character.getName())) continue;
         player = p;
         break;
@@ -766,6 +788,8 @@ public class App {
         drawPick(2, 2, player);
       }
     }
+    // save("slot1");
+    phase = "charSelect";
   }
 
   public void endGame()
@@ -797,26 +821,134 @@ public class App {
     System.out.printf("Congratulations, Player %d has won this game.\n", winnerId);
   }
 
-  public void save(Player player, String fileName)
+  public void save(String fileName)
   {
     fileName += ".json";
     try{
       File file = new File(fileName);
       FileWriter writer = new FileWriter(fileName);
-      writer.write(player.toJSON().toString());
+      writer.write(this.toJSON().toString());
       writer.close();
     }
     catch (Exception e){
-      System.out.printf("Error while creating file %s\n", fileName);
+      System.out.printf("Error saving to %s.json\n", fileName);
       e.printStackTrace();
       return;
     }
   }
 
+  public JSONObject toJSON()
+  {
+    JSONObject obj = new JSONObject();
+    obj.put("crownOwnerId", crownOwnerId);
+    obj.put("deck", deck.toJSON());
+    obj.put("firstCompletePlayerId", firstCompletePlayerId );
+    obj.put("round", round);
+    obj.put("debugMode", debugMode );
+    obj.put("phase", phase);
+    JSONArray charactersJson = new JSONArray();
+    for (Character c : characters){
+      charactersJson.add(c.toJSON());
+    }
+    obj.put("characters", charactersJson);
+    JSONArray playersJson = new JSONArray();
+    for (Player p : players){
+      playersJson.add(p.toJSON());
+    }
+    obj.put("players", playersJson);
+    return obj;
+  }
+
+  public void load(String fileName)
+  {
+    fileName += ".json";
+    String jsonCode = "";
+    try{
+      File file = new File(fileName);
+      Scanner fileScanner = new Scanner(file);
+      jsonCode = fileScanner.nextLine();
+      fileScanner.close();
+    }
+    catch (Exception e){
+      System.out.printf("Some error occurred when loading from %s.json\n", fileName);
+      e.printStackTrace();
+      return;
+    }
+
+    JSONObject obj = (JSONObject) JSONValue.parse(jsonCode);
+    crownOwnerId = ((Long)obj.get("crownOwnerId")).intValue();
+    deck = new Deck((JSONArray)obj.get("deck"));
+    firstCompletePlayerId = ((Long)obj.get("firstCompletePlayerId")).intValue();
+    round = ((Long)obj.get("round")).intValue();
+    debugMode = (boolean)obj.get("debugMode");
+    phase = (String)obj.get("phase");
+    characters = new ArrayList<>();
+    JSONArray charactersJson = (JSONArray)obj.get("characters");
+    // System.out.printf("aint no way %s\n", charactersJson.toString());
+    for (int i=0; i<charactersJson.size(); i++){
+      JSONObject charJson = (JSONObject)charactersJson.get(i);
+      String name = (String)charJson.get("name");
+      Character character = null;
+      if (name.equals("Assassin")){
+        character = new Assassin((JSONObject)charactersJson.get(i));
+      }
+      if (name.equals("Thief")){
+        character = new Thief((JSONObject)charactersJson.get(i));
+      }
+      if (name.equals("Magician")){
+        character = new Magician((JSONObject)charactersJson.get(i));
+      }
+      if (name.equals("King")){
+        character = new King((JSONObject)charactersJson.get(i));
+      }
+      if (name.equals("Bishop")){
+        character = new Bishop((JSONObject)charactersJson.get(i));
+      }
+      if (name.equals("Merchant")){
+        character = new Merchant((JSONObject)charactersJson.get(i));
+      }
+      if (name.equals("Architect")){
+        character = new Architect((JSONObject)charactersJson.get(i));
+      }
+      if (name.equals("Warlord")){
+        character = new Warlord((JSONObject)charactersJson.get(i));
+      }
+      characters.add(character);
+    }
+    for (Character c : characters){
+      if (c == null){
+        System.out.println("null char");
+      }
+      else{
+        System.out.println(c.getName());
+      }
+    }
+    players = new ArrayList<>();
+    JSONArray playersJson = (JSONArray)obj.get("players");
+    for (int i=0; i<playersJson.size(); i++){
+      players.add(new Player((JSONObject)playersJson.get(i)));
+    }
+    // for (Player p : players){
+    //   if (p == null){
+    //     System.out.println("null");
+    //   }
+    //   else{
+    //     System.out.println(p.disp()+":");
+    //     if (p.getCharacter() == null){
+    //       System.out.println("null char");
+    //     }
+    //     else{
+    //       System.out.println(p.getCharacter().getName());
+    //     }
+    //   }
+    // }
+  
+    System.out.printf("Load from %s successfully\n", fileName);
+  }
+
 	public App()
   {
     scanner = new Scanner(System.in);
-    round = 0;
     try{
       getCardsData();
     }
@@ -826,17 +958,18 @@ public class App {
       return;
     }
     initialSetup();
+    load("slot1");
     while(true){
       for (Player p : players){
         p.resetCard();
         p.resetPlayer();
       }
-      round++;
-      characterSelection();
-      turn();
-      save(humanPlayer, "slot1");
+      if (phase.equals("charSelect")) characterSelection();
+      if (phase.equals("turn")) turn();
+      // break;
       if (isGameOver()) break;
       System.out.println("Everyone is done, new round!");
+      round++;
     }
     endGame();
   }

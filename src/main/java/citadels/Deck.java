@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.Collections;
 
+import org.json.simple.*;
+
 public class Deck
 {
   private ArrayList<Card> cards;
@@ -11,6 +13,14 @@ public class Deck
   public Deck()
   {
     cards = new ArrayList<>();
+  }
+
+  public Deck(JSONArray arr)
+  {
+    cards = new ArrayList<>();
+    for (int i=0; i<arr.size(); i++){
+      cards.add(new Card((JSONObject)arr.get(i)));
+    }
   }
 
   public void addCard(Card card)
@@ -46,6 +56,15 @@ public class Deck
   public int size()
   {
     return cards.size();
+  }
+
+  public JSONArray toJSON()
+  {
+    JSONArray arr = new JSONArray();
+    for (Card c : cards){
+      arr.add(c.toJSON());
+    }
+    return arr;
   }
 
   public void disp()

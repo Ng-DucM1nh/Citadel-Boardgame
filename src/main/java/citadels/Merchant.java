@@ -1,11 +1,21 @@
 package citadels;
 
+import org.json.simple.*;
+
 public class Merchant extends Character
 {
   public Merchant()
   {
     name = "Merchant";
     description = "Gains one gold for each green (trade) district in their city. Gains one extra gold.";
+  }
+
+  public Merchant(JSONObject obj)
+  {
+    name = (String)obj.get("name");
+    description = (String)obj.get("description");
+    numBuild = ((Long)obj.get("numBuild")).intValue();
+    numAction = ((Long)obj.get("numAction")).intValue();
   }
 
   public void passiveSkill(App app, Player player)

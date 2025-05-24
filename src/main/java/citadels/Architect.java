@@ -1,5 +1,7 @@
 package citadels;
 
+import org.json.simple.*;
+
 public class Architect extends Character
 {
   public Architect()
@@ -7,6 +9,14 @@ public class Architect extends Character
     name = "Architect";
     description = "Gains two extra district cards. Can build up to 3 districts per turn.";
     numBuild = 3;
+  }
+
+  public Architect(JSONObject obj)
+  {
+    name = (String)obj.get("name");
+    description = (String)obj.get("description");
+    numBuild = ((Long)obj.get("numBuild")).intValue();
+    numAction = ((Long)obj.get("numAction")).intValue();
   }
 
   public void passiveSkill(App app, Player player)
