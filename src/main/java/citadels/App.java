@@ -827,7 +827,6 @@ public class App {
         player = p;
         break;
       }
-      System.out.printf("currentTurnPlayerId %d\n", currentTurnPlayerId);
       if (currentTurnPlayerId != -1){
         if (player == null || player.getId() != currentTurnPlayerId) continue;
       }
