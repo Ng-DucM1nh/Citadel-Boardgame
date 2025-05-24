@@ -461,7 +461,6 @@ public class App {
     while (true){
       System.out.print(promptArrow);
       String command = scanner.nextLine();
-      System.out.println("~~~"+command+"~~~");
       String[] tokens = command.split(" ");
       if (command.equals("t")){
         if (!inTurn) return;
@@ -733,6 +732,7 @@ public class App {
         player = p;
         break;
       }
+      System.out.printf("currentTurnPlayerId %d\n", currentTurnPlayerId);
       if (currentTurnPlayerId != -1){
         if (player == null || player.getId() != currentTurnPlayerId) continue;
       }
@@ -744,6 +744,7 @@ public class App {
         System.out.printf("No one is the %s\n", character.getName());
         prompt(null);
         if (loadCalled) return;
+        currentTurnPlayerId = -1;
         continue;
       }
       System.out.printf("Player %d is the %s\n", player.getId(), character.getName());
@@ -752,6 +753,7 @@ public class App {
           System.out.printf("Player %d loses their turn because they were assassinated.\n", player.getId());
           prompt(null);
           if (loadCalled) return;
+          currentTurnPlayerId = -1;
           continue;
         }
         else{
@@ -796,9 +798,7 @@ public class App {
       }
       promptResource(player);
       prompt(player);
-      System.out.printf("after prompt ^^\n");
       if (loadCalled){
-        System.out.printf("nawr\n");
         return;
       }
       if (player.isCityCompleted(this)){
@@ -813,7 +813,6 @@ public class App {
         drawPick(2, 2, player);
       }
       currentTurnPlayerId = -1;
-      System.out.printf("yo wat happened\n");
     }
     phase = "charSelect";
   }
@@ -861,11 +860,11 @@ public class App {
       e.printStackTrace();
       return;
     }
+    System.out.printf("Saved game state to %s\n", fileName);
   }
 
   public JSONObject toJSON()
   {
-    System.out.printf("dit currentTurnPlayerId %d\n",currentTurnPlayerId);
     JSONObject obj = new JSONObject();
     obj.put("crownOwnerId", crownOwnerId);
     obj.put("deck", deck.toJSON());
